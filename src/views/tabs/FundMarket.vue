@@ -249,6 +249,10 @@ export default {
           text: '机构排名',
           left: 'center'
         },
+        legend: {
+          top: 'bottom',
+          padding: [10, 0, 0, 0]
+        },
         grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
         xAxis: { type: 'category', data: data.map(item => `${item.year} ${item.quarter}`) },
         yAxis: { type: 'value' },
@@ -446,7 +450,7 @@ export default {
 <style scoped>
 .fund-market {
   padding: 20px;
-  background-color: #fff;
+  background-color: #f5f7fa;
 }
 
 .chart-section {
@@ -454,6 +458,10 @@ export default {
   flex-direction: column;
   gap: 20px;
   margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .chart-container {
@@ -465,8 +473,10 @@ export default {
 }
 
 .filter-section {
-  background: #fff;
+  background: #ffffff;
   padding: 16px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .filter-item {
@@ -505,6 +515,7 @@ export default {
   border: 1px solid #e4e7ed;
   background: #fff;
   color: #606266;
+  transition: all 0.3s;
 }
 
 .el-tag:hover {

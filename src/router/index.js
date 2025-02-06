@@ -7,6 +7,7 @@ import StockMarket from "@/views/tabs/StockMarket.vue";
 import FundMarket from "@/views/tabs/FundMarket.vue";
 import FuturesData from "@/views/tabs/FuturesData.vue";
 import Economics from "@/views/tabs/Economics.vue";
+import UserProfile from '@/views/UserProfile.vue'
 
 const routes = [
   {
@@ -63,6 +64,11 @@ const routes = [
     path: '/fund/detail/:id',
     name: 'FundDetail',
     component: () => import('@/views/fund/Detail.vue')
+  },
+  {
+    path: '/user-profile',
+    name: 'UserProfile',
+    component: UserProfile
   }
 ];
 

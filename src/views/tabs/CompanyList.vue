@@ -360,16 +360,20 @@ export default {
 <style scoped>
 .company-list {
   padding: 20px;
-  background-color: #f5f7fa;
+  background: linear-gradient(135deg, #f5f7fa, #e2e8f0);
   min-height: 100%;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
 }
 
 .filter-section {
-  border-radius: 8px;
+  border-radius: 12px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   transition: all 0.3s ease;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
 }
 
 .filter-section:hover {
@@ -385,9 +389,9 @@ export default {
 }
 
 .section-header .title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1f2f3d;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
   user-select: none;
 }
 
@@ -430,10 +434,12 @@ export default {
 
 /* 搜索框样式 */
 .search-box {
-  background-color: #FFFAFA;
+  background-color: #ffffff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 20px;
+  border: 1px solid #dcdfe6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-box :deep(.el-input) {
@@ -471,6 +477,10 @@ export default {
 
 .table-container {
   padding-bottom: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-actions {
@@ -490,6 +500,9 @@ export default {
   justify-content: flex-end;
   align-items: center;
   gap: 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .total-info {
@@ -617,8 +630,9 @@ export default {
 }
 
 :deep(.el-dialog) {
-  border-radius: 8px;
+  border-radius: 12px;
   margin-top: 8vh !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 :deep(.el-dialog__header) {
@@ -709,7 +723,6 @@ export default {
   height: 27px;
   border: 1px solid #c8ccd4;
   border-radius: 3px;
-  vertical-align: middle;
   transition: background 0.1s ease;
   cursor: pointer;
   display: block;
@@ -876,7 +889,8 @@ input:not(:placeholder-shown) ~ .reset {
   border: 4px solid #06c8d9;
   border-radius: 0;
   position: relative;
-  transition: all 700ms ease;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .c-button--gooey .c-button__blobs {
@@ -917,6 +931,7 @@ input:not(:placeholder-shown) ~ .reset {
 
 .c-button--gooey:hover {
   color: #fff;
+  background-color: #06c8d9;
 }
 
 .c-button--gooey:hover .c-button__blobs div {

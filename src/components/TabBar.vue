@@ -1,23 +1,20 @@
 <template>
   <div class="tab-bar">
     <div class="tab-group">
-      <div 
-        v-for="tab in activeTabs" 
+      <div
+        v-for="tab in activeTabs"
         :key="tab.id"
         class="tab-item"
         :class="{ active: tab.active }"
         @click="activateTab(tab)"
       >
         <span class="tab-title">
-          {{ tab.title }}{{ tab.count ? ' ' + tab.count : '' }}
+          {{ tab.title }}{{ tab.count ? " " + tab.count : "" }}
         </span>
         <span class="close-icon" @click.stop="closeTab(tab)">×</span>
       </div>
     </div>
-    <el-dropdown 
-      trigger="click" 
-      @command="addTab"
-    >
+    <el-dropdown trigger="click" @command="addTab">
       <button class="cssbuttons-io-button">
         <svg
           height="24"
@@ -26,13 +23,16 @@
           xmlns="http://www.w3.org/2000/svg"
         >
           <path d="M0 0h24v24H0z" fill="none"></path>
-          <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" fill="currentColor"></path>
+          <path
+            d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"
+            fill="currentColor"
+          ></path>
         </svg>
         <span>Add</span>
       </button>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item 
+          <el-dropdown-item
             v-for="tab in availableTabs"
             :key="tab"
             :command="tab"
@@ -46,153 +46,161 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 export default {
-  name: 'TabBar',
+  name: "TabBar",
   data() {
     return {
       tabList: [],
       activeTabs: [],
       nextId: 1,
       routeMap: {
-        '上市公司': '/company',
-        '股票市场': '/stock',
-        '公募基金': '/fund',
-        '期货数据': '/futures',
-        "宏观经济":'/economics'
-      }
-    }
+        上市公司: "/company",
+        股票市场: "/stock",
+        公募基金: "/fund",
+        期货数据: "/futures",
+        宏观经济: "/economics",
+      },
+    };
   },
   computed: {
     availableTabs() {
-      return this.tabList
-    }
+      return this.tabList;
+    },
   },
   methods: {
     async fetchTabs() {
       try {
         const res = await request({
-          url: '/tab/list',
-          method: 'get'
-        })
-        
+          url: "/tab/list",
+          method: "get",
+        });
+
         if (res.code === 200) {
-          this.tabList = res.data.list
-          
+          this.tabList = res.data.list;
+
           // 获取当前路由对应的标签标题
-          const currentPath = this.$route.path
-          const currentTitle = Object.entries(this.routeMap).find(([_, path]) => path === currentPath)?.[0]
-          
+          const currentPath = this.$route.path;
+          const currentTitle = Object.entries(this.routeMap).find(
+            ([_, path]) => path === currentPath
+          )?.[0];
+
           // 初始化标签
           this.tabList.forEach((tabTitle, index) => {
-            const count = this.getNextCount(tabTitle)
+            const count = this.getNextCount(tabTitle);
             this.activeTabs.push({
               id: this.nextId++,
               title: tabTitle,
               active: tabTitle === currentTitle, // 根据当前路由设置激活状态
               count: count,
-              uniqueKey: `${tabTitle}-${count || 1}`
-            })
-          })
-          
+              uniqueKey: `${tabTitle}-${count || 1}`,
+            });
+          });
+
           // 如果没有匹配的标签，且有标签存在，则激活第一个标签
-          if (!this.activeTabs.some(tab => tab.active) && this.activeTabs.length > 0) {
-            this.activeTabs[0].active = true
-            this.navigateToTab(this.activeTabs[0])
+          if (
+            !this.activeTabs.some((tab) => tab.active) &&
+            this.activeTabs.length > 0
+          ) {
+            this.activeTabs[0].active = true;
+            this.navigateToTab(this.activeTabs[0]);
           }
         }
       } catch (error) {
-        console.error('获取标签列表失败:', error)
+        console.error("获取标签列表失败:", error);
       }
     },
     getNextCount(tabTitle) {
-      let uniqueKey = this.activeTabs.filter(tab => tab.title === tabTitle).map(tab => tab.uniqueKey)
-      let tmp = uniqueKey.map(key => {
-        const parts = key.split("-");
-        return parseInt(parts[1], 10); // 转换为整数
-      }).sort((a, b) => a - b)
+      let uniqueKey = this.activeTabs
+        .filter((tab) => tab.title === tabTitle)
+        .map((tab) => tab.uniqueKey);
+      let tmp = uniqueKey
+        .map((key) => {
+          const parts = key.split("-");
+          return parseInt(parts[1], 10); // 转换为整数
+        })
+        .sort((a, b) => a - b);
       for (let i = 1; i <= tmp.length; i++) {
         if (tmp[i - 1] !== i) {
-          return i > 1 ? i : undefined
+          return i > 1 ? i : undefined;
         }
       }
-      return tmp.length + 1 > 1 ? tmp.length + 1 : undefined
+      return tmp.length + 1 > 1 ? tmp.length + 1 : undefined;
     },
     addTab(tabTitle) {
       // 先将所有标签设置为非激活状态
-      this.activeTabs.forEach(tab => tab.active = false)
-      
+      this.activeTabs.forEach((tab) => (tab.active = false));
+
       // 创建新标签
-      const count = this.getNextCount(tabTitle)
+      const count = this.getNextCount(tabTitle);
       const newTab = {
         id: this.nextId++,
         title: tabTitle,
         active: true,
         count: count,
-        uniqueKey: `${tabTitle}-${count || 1}`
-      }
-      
-
+        uniqueKey: `${tabTitle}-${count || 1}`,
+      };
 
       // 添加新标签
-      this.activeTabs.push(newTab)
-      
+      this.activeTabs.push(newTab);
+
       // 立即导航到新标签对应的路由
-      this.navigateToTab(newTab)
+      this.navigateToTab(newTab);
     },
     navigateToTab(tab) {
-      const route = this.routeMap[tab.title]
+      const route = this.routeMap[tab.title];
       if (route) {
         this.$router.push({
           path: route,
-          query: { 
-            id: tab.uniqueKey 
-          }
-        })
+          query: {
+            id: tab.uniqueKey,
+          },
+        });
       }
     },
     activateTab(tab) {
-      this.activeTabs.forEach(t => t.active = false)
-      tab.active = true
-      this.navigateToTab(tab)
+      this.activeTabs.forEach((t) => (t.active = false));
+      tab.active = true;
+      this.navigateToTab(tab);
     },
     closeTab(tab) {
-      const index = this.activeTabs.indexOf(tab)
-      
+      const index = this.activeTabs.indexOf(tab);
+
       // 如果关闭的是激活的标签，需要激活并导航到其他标签
       if (tab.active && this.activeTabs.length > 1) {
         // 优先选择右边的标签，如果没有则选择左边的
-        const nextTab = this.activeTabs[index + 1] || this.activeTabs[index - 1]
-        nextTab.active = true
+        const nextTab =
+          this.activeTabs[index + 1] || this.activeTabs[index - 1];
+        nextTab.active = true;
         // 导航到新激活的标签
-        this.navigateToTab(nextTab)
+        this.navigateToTab(nextTab);
       }
-      
+
       // 移除要关闭的标签
-      this.activeTabs = this.activeTabs.filter(t => t.id !== tab.id)
+      this.activeTabs = this.activeTabs.filter((t) => t.id !== tab.id);
 
       // 如果关闭后没有标签了，可以选择重定向到首页或其他页面
       if (this.activeTabs.length === 0) {
-        this.$router.push('/')
+        this.$router.push("/");
       }
-    }
+    },
   },
   created() {
-    this.fetchTabs()
-  }
-}
+    this.fetchTabs();
+  },
+};
 </script>
 
 <style scoped>
 .tab-bar {
   display: flex;
   align-items: center;
-  height: 48px;
-  background: #ffffff;
-  border-bottom: 1px solid #e4e7ed;
-  padding: 0 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  height: 50px; 
+  background: #f8f9fa; 
+  border-bottom: 1px solid #dcdfe6;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .tab-group {
@@ -211,15 +219,15 @@ export default {
 .tab-item {
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  min-width: 120px;
-  max-width: 200px;
-  height: 32px;
-  margin: 8px 4px;
-  background: #f5f7fa;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #606266;
+  padding: 0 18px; 
+  min-width: 130px; 
+  max-width: 220px; 
+  height: 36px; 
+  margin: 8px 6px; 
+  background: #e9ecef;
+  border-radius: 8px; 
+  font-size: 14px;
+  color: #495057;
   cursor: pointer;
   user-select: none;
   transition: all 0.3s ease;
@@ -227,11 +235,11 @@ export default {
 }
 
 .tab-item:hover {
-  background: #ecf5ff;
+  background: #dee2e6; 
 }
 
 .tab-item.active {
-  background: #409eff;
+  background: #007bff; 
   color: white;
 }
 
@@ -245,12 +253,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 8px;
-  width: 16px;
-  height: 16px;
+  margin-left: 10px; 
+  width: 18px; 
+  height: 18px; 
   border-radius: 50%;
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 16px; 
+  opacity: 0.8;
   transition: all 0.2s ease;
 }
 

@@ -24,31 +24,37 @@
 .futures-calendar {
   width: 100%;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.futures-calendar:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
+  gap: 15px;
   justify-items: center;
 }
 
 .calendar-day {
-  padding: 10px;
-  border-radius: 4px;
+  padding: 15px;
+  border-radius: 6px;
   text-align: center;
   transition: transform 0.3s, background-color 0.3s;
+  cursor: pointer;
 }
 
 .calendar-day:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .calendar-day.open {
-  background-color: #e0f7fa;
+  background-color: #e3f2fd;
 }
 
 .calendar-day.closed {
@@ -58,18 +64,19 @@
 .product-select {
   width: 100%;
   max-width: 300px;
-  padding: 10px;
+  padding: 12px;
   margin: 20px 0;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: #f8f9fa;
   font-size: 16px;
   color: #333;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .product-select:focus {
   border-color: #007bff;
+  background-color: #ffffff;
   outline: none;
 }
 </style>

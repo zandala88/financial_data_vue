@@ -548,8 +548,8 @@ export default {
 
 <style scoped>
 .stock-market {
-  padding: 20px;
-  background-color: #fff;
+  padding: 30px;
+  background-color: #f9f9f9;
 }
 
 .top10-chart-section {
@@ -574,10 +574,11 @@ export default {
 .filter-container {
   background: #fff;
   border-radius: 8px;
-  padding: 16px 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  padding: 20px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .filters {
@@ -595,10 +596,10 @@ export default {
 }
 
 .label {
-  font-size: 14px;
-  color: #606266;
+  font-size: 16px;
+  color: #333;
   white-space: nowrap;
-  width: 80px;
+  width: 100px;
 }
 
 :deep(.el-checkbox-group) {
@@ -632,21 +633,21 @@ export default {
 }
 
 .actions {
-  padding-left: 24px;
+  padding-left: 30px;
   border-left: 1px solid #ebeef5;
   display: flex;
-  align-items: flex-start;
-  margin-top: 12px; /* 与第一行对齐 */
+  align-items: center;
+  margin-top: 0;
 }
 
 .search-container {
-  margin-top: 16px;
+  margin-top: 20px;
   background: #fff;
   border-radius: 8px;
-  padding: 16px 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  padding: 20px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
 }
 
@@ -676,15 +677,15 @@ export default {
 }
 
 .table-container {
-  margin-top: 16px;
+  margin-top: 20px;
   background: #fff;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .pagination-container {
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }

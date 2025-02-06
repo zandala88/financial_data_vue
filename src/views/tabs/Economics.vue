@@ -466,6 +466,9 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  padding: 2rem;
+  border-radius: 12px;
 }
 
 .tabs {
@@ -477,6 +480,7 @@ export default {
   border-radius: 99px;
   width: auto;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 
 .tabs * {
@@ -498,7 +502,12 @@ export default {
   font-weight: 500;
   border-radius: 99px;
   cursor: pointer;
-  transition: color 0.15s ease-in;
+  transition: color 0.15s ease-in, background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab:hover {
+  background-color: #e6eef9;
 }
 
 .notification {
@@ -552,14 +561,14 @@ export default {
 }
 
 .tab-content {
-  width: 100%; /* 占满整行 */
-  max-width: 1200px; /* 可选：设置最大宽度 */
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
 
 .chart {
-  width: 1000px; /* 占满整行 */
+  width: 1000px;
   height: 500px;
   margin: 0 auto;
   background-color: #f9f9f9;
@@ -702,7 +711,7 @@ export default {
   padding: 0.8rem 1.5rem;
   font-size: 0.9rem;
   font-weight: 500;
-  background-color: #185ee0;
+  background: linear-gradient(135deg, #185ee0, #1254d6);
   color: white;
   border: none;
   border-radius: 8px;
@@ -711,6 +720,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(24, 94, 224, 0.15);
 }
 
 .styled-button:hover {
@@ -738,6 +748,11 @@ export default {
     width: 100%;
     max-width: 300px;
     justify-content: center;
+  }
+  
+  .chart {
+    width: 100%;
+    height: auto;
   }
 }
 

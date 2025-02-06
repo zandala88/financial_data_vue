@@ -8,6 +8,30 @@
         </svg>
         <span>Back</span>
       </button>
+      <!-- 书签复选框 -->
+      <div class="bookmark-checkbox">
+        <input
+          type="checkbox"
+          id="bookmark-toggle"
+          class="bookmark-checkbox__input"
+          v-model="follow"
+        />
+        <label for="bookmark-toggle" class="bookmark-checkbox__label">
+          <svg class="bookmark-checkbox__icon" viewBox="0 0 24 24">
+            <path
+              class="bookmark-checkbox__icon-back"
+              d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+            ></path>
+            <path class="bookmark-checkbox__icon-check" d="M8 11l3 3 5-5"></path>
+          </svg>
+        </label>
+      </div>
+      <!-- 新增按钮容器 -->
+      <div class="button-container">
+        <button class="new-button" @click="togglePredictionModal">
+          预测结果
+        </button>
+      </div>
     </div>
 
     <!-- 日期选择器 -->
@@ -50,13 +74,23 @@
         RSI指标用于衡量价格的相对强弱。高于70表示超买，低于30表示超卖。
       </div>
     </div>
+
+    <!-- 预测结果弹窗 -->
+    <div v-if="isPredictionModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="close" @click="closePredictionModal">&times;</div>
+        <h3>预测结果</h3>
+        <div ref="predictionChartRef" style="width: 100%; height: 600px"></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
+import { debounce } from 'lodash'
 import * as echarts from 'echarts'
 import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
@@ -77,6 +111,33 @@ export default {
     let macdChartInstance = null
     let rsiChartInstance = null
     const dateRange = ref([])
+    const follow = ref(false)
+    const predictionChartRef = ref(null)
+    const isPredictionModalOpen = ref(false)
+    const predictionData = ref({ list: [], val: 0 })
+    let predictionChartInstance = null
+
+    // 更新关注状态
+    const updateFollowStatus = debounce(async () => {
+      try {
+        await request({
+          url: "/fund/follow",
+          method: "post",
+          data: {
+            id: parseInt(route.params.id, 10), // 转换为整数
+            follow: follow.value,
+          },
+        });
+      } catch (error) {
+        console.error("更新关注状态失败:", error);
+        ElMessage.error("更新关注状态失败");
+      }
+    }, 300); // 300ms 防抖
+
+    // 监听 follow 变化
+    watch(follow, () => {
+      updateFollowStatus();
+    });
 
     // 返回上一页
     const handleBack = () => {
@@ -336,6 +397,7 @@ export default {
 
         if (res.code === 200 && res.data.have) {
           renderChart(res.data.list)
+          follow.value = res.data.follow; // 更新 follow 状态
         } else {
           ElMessage.warning('暂无数据')
         }
@@ -349,6 +411,100 @@ export default {
     const handleDateChange = () => {
       fetchFundData()
     }
+
+    const togglePredictionModal = async () => {
+      isPredictionModalOpen.value = !isPredictionModalOpen.value;
+      if (isPredictionModalOpen.value) {
+        await fetchPredictionData();
+      }
+    };
+
+    const closePredictionModal = () => {
+      isPredictionModalOpen.value = false;
+      if (predictionChartInstance) {
+        predictionChartInstance.dispose();
+        predictionChartInstance = null;
+      }
+    };
+
+    const fetchPredictionData = async () => {
+      try {
+        const res = await request({
+          url: "/fund/predict",
+          method: "get",
+          params: { id: route.params.id },
+        });
+
+        if (res.code === 200) {
+          predictionData.value = res.data;
+          renderPredictionChart();
+        } else {
+          ElMessage.warning("获取预测数据失败");
+        }
+      } catch (error) {
+        console.error("获取预测数据失败:", error);
+        ElMessage.error("获取预测数据失败");
+      }
+    };
+
+    const renderPredictionChart = () => {
+      if (!predictionChartInstance) {
+        predictionChartInstance = echarts.init(predictionChartRef.value);
+      }
+
+      const historicalData = predictionData.value.list;
+      const allData = [...historicalData, predictionData.value.val];
+
+      const option = {
+        title: {
+          text: "预测结果",
+          left: "center",
+        },
+        tooltip: {
+          trigger: "axis",
+          formatter: (params) => {
+            const index = params[0].dataIndex;
+            if (index === historicalData.length) {
+              return `预测值: ${params[0].value}`;
+            }
+            return `第${index + 1}次: ${params[0].value}`;
+          },
+        },
+        xAxis: {
+          type: "category",
+          data: allData.map((_, index) =>
+            index < historicalData.length ? `前${historicalData.length - index}次` : "预测值"
+          ),
+          axisLabel: {
+            formatter: (value) => value,
+          },
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            name: "基金价格",
+            type: "line",
+            data: allData,
+            markPoint: {
+              symbol: "pin",
+              symbolSize: 50,
+              data: [
+                {
+                  value: predictionData.value.val,
+                  xAxis: historicalData.length,
+                  yAxis: predictionData.value.val,
+                  name: "预测值",
+                },
+              ],
+            },
+          },
+        ],
+      };
+
+      predictionChartInstance.setOption(option);
+    };
 
     onMounted(async () => {
       await nextTick()
@@ -394,6 +550,7 @@ export default {
       rsiChartRef,
       dateRange,
       handleBack,
+      follow,
       shortcuts: [
         {
           text: '最近一周',
@@ -432,7 +589,12 @@ export default {
           }
         }
       ],
-      handleDateChange
+      handleDateChange,
+      togglePredictionModal,
+      isPredictionModalOpen,
+      predictionData,
+      predictionChartRef,
+      closePredictionModal,
     }
   }
 }
@@ -444,32 +606,43 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: #f5f7fa; /* 改为更柔和的背景色 */
 }
 
 .nav-header {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
+  padding: 10px; /* 增加内边距 */
+  background-color: #ffffff; /* 增加背景色 */
+  border-radius: 8px; /* 增加圆角 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 增加阴影 */
 }
 
 .header {
   margin-bottom: 20px;
+  padding: 10px; /* 增加内边距 */
+  background-color: #ffffff; /* 增加背景色 */
+  border-radius: 8px; /* 增加圆角 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 增加阴影 */
 }
 
 .chart-container {
   flex: 1;
   min-height: 300px;
   border: 1px solid #ebeef5;
-  border-radius: 4px;
+  border-radius: 8px; /* 增加圆角 */
   margin-bottom: 20px;
-  padding: 10px;
+  padding: 15px; /* 增加内边距 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* 增加背景色 */
 }
 
 .chart-title {
   text-align: center;
   font-weight: bold;
   margin: 10px 0;
-  font-size: 18px;
+  font-size: 20px; /* 增加字体大小 */
   color: #333;
 }
 
@@ -513,5 +686,108 @@ export default {
 .nav-header button:hover {
   box-shadow: 9px 9px 33px #d1d1d1, -9px -9px 33px #ffffff;
   transform: translateY(-2px);
+}
+
+.bookmark-checkbox {
+  display: inline-block;
+}
+
+.bookmark-checkbox__input {
+  display: none;
+}
+
+.bookmark-checkbox__label {
+  cursor: pointer;
+}
+
+.bookmark-checkbox__icon {
+  width: 2em;
+  height: 2em;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s, fill 0.3s;
+}
+
+.bookmark-checkbox__icon-back {
+  stroke: #333;
+  transition: transform 0.3s;
+}
+
+.bookmark-checkbox__icon-check {
+  stroke: #fff;
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  transition: stroke-dashoffset 0.3s, transform 0.3s;
+  transform: translateX(2px);
+}
+
+.bookmark-checkbox__input:checked
+  + .bookmark-checkbox__label
+  .bookmark-checkbox__icon {
+  fill: #ff5a5f;
+}
+
+.bookmark-checkbox__input:checked
+  + .bookmark-checkbox__label
+  .bookmark-checkbox__icon-back {
+  stroke: #ff5a5f;
+  transform: scale(1.1);
+  animation: bookmark-pop 0.4s ease;
+}
+
+.bookmark-checkbox__input:checked
+  + .bookmark-checkbox__label
+  .bookmark-checkbox__icon-check {
+  stroke-dashoffset: 0;
+  transition-delay: 0.2s;
+}
+
+@keyframes bookmark-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.button-container {
+  margin-left: auto; /* 将按钮容器移到最右边 */
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px; /* 增加圆角 */
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 增加阴影 */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333; /* 改为更明显的关闭按钮颜色 */
 }
 </style>
