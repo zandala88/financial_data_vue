@@ -33,4 +33,4 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: 22
           source: "dist/*"
-          target: "/var/www/html/financial_vue_dist/"  # 你的服务器部署目录
+          target: "/var/www/html/financial_vue_dist"  # 你的服务器部署目录
