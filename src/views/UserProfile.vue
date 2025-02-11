@@ -24,7 +24,7 @@
                 @click="goToDetail('stock', stock.id)"
                 @mouseover="hoveredStock = stock.id"
                 @mouseleave="hoveredStock = null"
-                :style="{ backgroundColor: stock.nextVal === 0 ? 'white' : (stock.nextVal > stock.val ? 'lightgreen' : 'lightcoral') }">
+                :style="{ backgroundColor: stock.nextVal === 0 ? 'white' : (stock.nextVal > stock.val ? 'lightcoral' : 'lightgreen') }">
               {{ stock.name }}
               <span v-if="hoveredStock === stock.id" class="prediction">
                 - 预测值: {{ stock.nextVal === 0 ? '暂无预测值' : stock.nextVal }}
@@ -39,7 +39,7 @@
                 @click="goToDetail('fund', fund.id)"
                 @mouseover="hoveredFund = fund.id"
                 @mouseleave="hoveredFund = null"
-                :style="{ backgroundColor: fund.nextVal === 0 ? 'white' : (fund.nextVal > fund.val ? 'lightgreen' : 'lightcoral') }">
+                :style="{ backgroundColor: fund.nextVal === 0 ? 'white' : (fund.nextVal > fund.val ? 'lightcoral' : 'lightgreen') }">
               {{ fund.name }}
               <span v-if="hoveredFund === fund.id" class="prediction">
                 - 预测值: {{ fund.nextVal === 0 ? '暂无预测值' : fund.nextVal }}
