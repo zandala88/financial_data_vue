@@ -43,13 +43,19 @@
                 class="bookmark-checkbox__icon-back"
                 d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
               ></path>
-              <path class="bookmark-checkbox__icon-check" d="M8 11l3 3 5-5"></path>
+              <path
+                class="bookmark-checkbox__icon-check"
+                d="M8 11l3 3 5-5"
+              ></path>
             </svg>
           </label>
         </div>
       </div>
       <!-- 新增按钮容器 -->
       <div class="button-container">
+        <button class="new-button" @click="toggleAIAnalysisModal">
+          AI分析
+        </button>
         <button class="new-button" @click="togglePredictionModal">
           预测结果
         </button>
@@ -162,6 +168,18 @@
       </div>
     </div>
 
+    <!-- AI分析固定窗口 -->
+    <div v-if="isAIAnalysisModalOpen" class="fixed-ai-analysis">
+      <div class="close" @click="closeAIAnalysisModal">&times;</div>
+      <h3>AI 分析结果：</h3>
+      <div
+        v-for="(msg, index) in aiMessages"
+        :key="index"
+        v-html="renderMarkdown(msg)"
+        class="ai-message"
+      ></div>
+    </div>
+
     <!-- 公司信息 -->
     <div class="company-info">
       <div class="company-name">{{ stockInfo.name }}</div>
@@ -222,13 +240,13 @@ import * as echarts from "echarts";
 import request from "@/utils/request";
 import { ElMessage } from "element-plus";
 import { debounce } from "lodash";
+import MarkdownIt from "markdown-it";
 
 export default {
   name: "StockDetail",
   components: {
     ArrowLeft,
   },
-
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -250,6 +268,7 @@ export default {
     let forecastChartInstance = null;
     let top10PieChartInstance = null;
     let predictionChartInstance = null;
+    let reader = null;
     const dateRange = ref([]);
     const stockInfo = ref({
       name: "",
@@ -267,6 +286,13 @@ export default {
     const predictionData = ref({ list: [], val: 0 });
     const isPredictionModalOpen = ref(false);
     const follow = ref(false);
+    const isAIAnalysisModalOpen = ref(false);
+    const aiMessages = ref([]);
+    let eventSource = null;
+    let buffer = ""; // 用于存储未处理的流数据
+    const md = new MarkdownIt({
+      breaks: false, // 禁用自动换行
+    });
 
     // 更新关注状态
     const updateFollowStatus = debounce(async () => {
@@ -1020,7 +1046,9 @@ export default {
         xAxis: {
           type: "category",
           data: allData.map((_, index) =>
-            index < historicalData.length ? `前${historicalData.length - index}次` : "预测值"
+            index < historicalData.length
+              ? `前${historicalData.length - index}次`
+              : "预测值"
           ),
           axisLabel: {
             formatter: (value) => value,
@@ -1051,6 +1079,78 @@ export default {
       };
 
       predictionChartInstance.setOption(option);
+    };
+
+    const closeAIAnalysisModal = () => {
+      isAIAnalysisModalOpen.value = false;
+      closeStream();
+    };
+
+    const startStream = async () => {
+      aiMessages.value = []; // 清空旧数据
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          "http://110.41.11.12:8877/api/v1/stock/ai?id="+ route.params.id,
+          {
+            method: "GET",
+            headers: {
+              Accept: "text/event-stream",
+              token: `${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("网络请求失败");
+        }
+
+        reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (isAIAnalysisModalOpen.value) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value, { stream: true });
+          buffer += text; // 将新数据添加到缓冲区
+
+          let lines = buffer.split("\n"); // 按换行符分割缓冲区
+          buffer = lines.pop(); // 将最后一个不完整的行保留在缓冲区中
+
+          // 逐行更新 aiMessages
+          for (let line of lines) {
+            if (
+              line.trim() ||
+              aiMessages.value[aiMessages.value.length - 1]?.trim()
+            ) {
+              aiMessages.value.push(line);
+            }
+          }
+        }
+        if (buffer.trim()) {
+          aiMessages.value.push(buffer);
+          buffer = ""; // 清空缓冲区
+        }
+      } catch (err) {
+        console.error("流式请求错误", err);
+      }
+    };
+
+    const closeStream = async () => {
+      if (reader) {
+        await reader.cancel(); // 取消流读取
+        reader = null;
+      }
+    };
+
+    const toggleAIAnalysisModal = async () => {
+      isAIAnalysisModalOpen.value = !isAIAnalysisModalOpen.value;
+      if (isAIAnalysisModalOpen.value) {
+        startStream();
+      } else {
+        closeStream();
+      }
     };
 
     watch(isModalOpen, async (newVal) => {
@@ -1149,6 +1249,11 @@ export default {
       }
     });
 
+    // 渲染 Markdown
+    const renderMarkdown = (text) => {
+      return md.render(text);
+    };
+
     return {
       chartRef,
       macdChartRef,
@@ -1220,6 +1325,11 @@ export default {
       predictionChartRef,
       closePredictionModal,
       follow,
+      isAIAnalysisModalOpen,
+      aiMessages,
+      toggleAIAnalysisModal,
+      closeAIAnalysisModal,
+      renderMarkdown,
     };
   },
 };
@@ -1322,7 +1432,6 @@ export default {
   line-height: 1.6;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
 
 /* 新增按钮样式 */
 .button {
@@ -1631,5 +1740,48 @@ button:hover {
   100% {
     transform: scale(1.1);
   }
+}
+
+/* AI分析固定窗口样式 */
+.fixed-ai-analysis {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 400px; /* 增加宽度 */
+  height: 600px; /* 增加高度 */
+  overflow-y: auto; /* 允许垂直滚动 */
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  box-sizing: border-box; /* 确保 padding 不影响宽高 */
+}
+
+.fixed-ai-analysis .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #aaa;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.fixed-ai-analysis .close:hover,
+.fixed-ai-analysis .close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ai-message {
+  margin-bottom: 10px; /* 每条消息之间的间距 */
+  white-space: pre-wrap; /* 保留换行符并允许自动换行 */
+  overflow: hidden; /* 隐藏溢出文本 */
+  text-overflow: ellipsis; /* 使用省略号表示溢出文本 */
+  word-wrap: break-word; /* 允许长单词换行 */
 }
 </style>
