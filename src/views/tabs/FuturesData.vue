@@ -1,12 +1,5 @@
 <template>
   <div class="futures-calendar">
-    <h2>交易日历</h2>
-    <div class="calendar-grid">
-      <div v-for="(day, index) in calendarData" :key="index" :class="{ open: day.isOpen, closed: !day.isOpen }" class="calendar-day">
-        <div>{{ day.calDate }}</div>
-        <div>{{ day.isOpen ? '开放' : '关闭' }}</div>
-      </div>
-    </div>
     <select v-model="selectedProduct" @change="fetchDetailData" class="product-select">
       <option v-for="product in products" :key="product.value" :value="product.value">
         {{ product.label }}
@@ -32,33 +25,6 @@
 
 .futures-calendar:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 15px;
-  justify-items: center;
-}
-
-.calendar-day {
-  padding: 15px;
-  border-radius: 6px;
-  text-align: center;
-  transition: transform 0.3s, background-color 0.3s;
-  cursor: pointer;
-}
-
-.calendar-day:hover {
-  transform: scale(1.1);
-}
-
-.calendar-day.open {
-  background-color: #e3f2fd;
-}
-
-.calendar-day.closed {
-  background-color: #ffebee;
 }
 
 .product-select {
@@ -89,29 +55,16 @@ export default {
   name: 'FuturesCalendar',
   data() {
     return {
-      calendarData: [],
       selectedProduct: 'CU',
       products: [],
       detailData: []
     }
   },
   created() {
-    this.fetchCalendarData()
     this.fetchDetailData()
     this.fetchProductsData()
   },
   methods: {
-    fetchCalendarData() {
-      request.get('/fut/cal')
-        .then(response => {
-          if (response.code === 200) {
-            this.calendarData = response.data.sse
-          }
-        })
-        .catch(error => {
-          console.error('获取日历数据失败:', error)
-        })
-    },
     fetchDetailData() {
       request.get(`/fut/detail?prd=${this.selectedProduct}`)
         .then(response => {

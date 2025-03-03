@@ -1,10 +1,6 @@
 <template>
   <div class="fund-market">
-    <!-- 图表部分 -->
-    <div class="chart-section">
-      <div ref="radioChart" class="chart-container"></div>
-      <div ref="instChart" class="chart-container"></div>
-    </div>
+
 
     <!-- 筛选条件 -->
     <div class="filter-section">
@@ -150,132 +146,7 @@ export default {
     const investTypeList = ref([])
     const selectedFundTypes = ref([])
     const selectedInvestTypes = ref([])
-    const radioChart = ref(null)
     const instChart = ref(null)
-
-    // 获取图表数据
-    const fetchGraphData = async () => {
-      try {
-        const res = await request({
-          url: '/fund/graph',
-          method: 'get'
-        })
-
-        if (res.code === 200) {
-          renderRadioChart(res.data.radio)
-          renderInstChart(res.data.inst)
-        } else {
-          ElMessage.error('获取图表数据失败')
-        }
-      } catch (error) {
-        console.error('获取图表数据失败:', error)
-        ElMessage.error('获取图表数据失败')
-      }
-    }
-
-    // 渲染比例图表
-    const renderRadioChart = (data) => {
-      const chart = echarts.init(radioChart.value)
-      const option = {
-        title: {
-          text: '各类型占比',
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          }
-        },
-        legend: {
-          top: 'bottom',
-          padding: [10, 0, 0, 0]
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '10%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          data: data.map(item => item.year)
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: '银行',
-            type: 'bar',
-            stack: 'total',
-            data: data.map(item => item.bank)
-          },
-          {
-            name: '证券公司',
-            type: 'bar',
-            stack: 'total',
-            data: data.map(item => item.secComp)
-          },
-          {
-            name: '基金公司',
-            type: 'bar',
-            stack: 'total',
-            data: data.map(item => item.fundComp)
-          },
-          {
-            name: '独立基金销售机构',
-            type: 'bar',
-            stack: 'total',
-            data: data.map(item => item.indepComp)
-          },
-          {
-            name: '其他',
-            type: 'bar',
-            stack: 'total',
-            data: data.map(item => item.rests)
-          }
-        ]
-      }
-      chart.setOption(option)
-      window.addEventListener('resize', () => chart.resize())
-    }
-
-    // 渲染机构图表
-    const renderInstChart = (data) => {
-      const chart = echarts.init(instChart.value)
-      chart.setOption({
-        title: {
-          text: '机构排名',
-          left: 'center'
-        },
-        legend: {
-          top: 'bottom',
-          padding: [10, 0, 0, 0]
-        },
-        grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-        xAxis: { type: 'category', data: data.map(item => `${item.year} ${item.quarter}`) },
-        yAxis: { type: 'value' },
-        series: [
-          { name: '基金规模', type: 'line', data: data.map(item => item.fundScale) },
-          { name: '总规模', type: 'line', data: data.map(item => item.scale) }
-        ],
-        dataZoom: [
-          {
-            type: 'inside',
-            start: 0,
-            end: 100
-          },
-          {
-            type: 'slider',
-            start: 0,
-            end: 100,
-            bottom: 20
-          }
-        ]
-      })
-      window.addEventListener('resize', () => chart.resize())
-    }
 
     // 获取表格数据
     const fetchTableData = async () => {
@@ -417,10 +288,45 @@ export default {
       }
     }
 
+    // 渲染机构图表
+    const renderInstChart = (data) => {
+      const chart = echarts.init(instChart.value)
+      chart.setOption({
+        title: {
+          text: '机构排名',
+          left: 'center'
+        },
+        legend: {
+          top: 'bottom',
+          padding: [10, 0, 0, 0]
+        },
+        grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+        xAxis: { type: 'category', data: data.map(item => `${item.year} ${item.quarter}`) },
+        yAxis: { type: 'value' },
+        series: [
+          { name: '基金规模', type: 'line', data: data.map(item => item.fundScale) },
+          { name: '总规模', type: 'line', data: data.map(item => item.scale) }
+        ],
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 0,
+            end: 100
+          },
+          {
+            type: 'slider',
+            start: 0,
+            end: 100,
+            bottom: 20
+          }
+        ]
+      })
+      window.addEventListener('resize', () => chart.resize())
+    }
+
     onMounted(() => {
       fetchFilterOptions()
       fetchTableData()
-      fetchGraphData()
     })
 
     return {
@@ -440,7 +346,6 @@ export default {
       handleSizeChange,
       handleViewDetail,
       Search,
-      radioChart,
       instChart
     }
   }
@@ -501,17 +406,17 @@ export default {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
 }
 
 .el-tag {
   margin: 0;
   cursor: pointer;
-  border-radius: 2px;
-  font-size: 12px;
-  height: 24px;
-  line-height: 24px;
-  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
   border: 1px solid #e4e7ed;
   background: #fff;
   color: #606266;
@@ -525,9 +430,9 @@ export default {
 }
 
 .el-tag.active {
-  color: #409eff;
+  color: #fff;
   border-color: #409eff;
-  background-color: #ecf5ff;
+  background-color: #409eff;
 }
 
 :deep(.el-tag .el-tag__close) {

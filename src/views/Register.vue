@@ -158,7 +158,7 @@ export default {
             duration: 3000
           })
           setTimeout(() => {
-            this.$router.push('/')
+            this.$router.push('/user-profile')
           }, 3000)
         } else {
           ElMessage.error(res.msg || '注册失败')

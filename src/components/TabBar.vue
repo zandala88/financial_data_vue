@@ -56,11 +56,11 @@ export default {
       activeTabs: [],
       nextId: 1,
       routeMap: {
-        上市公司: "/company",
-        股票市场: "/stock",
-        公募基金: "/fund",
-        期货数据: "/futures",
-        宏观经济: "/economics",
+        上市公司: "/home/company",
+        股票市场: "/home/stock",
+        公募基金: "/home/fund",
+        期货数据: "/home/futures",
+        宏观经济: "/home/economics",
       },
     };
   },

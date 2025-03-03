@@ -1,31 +1,23 @@
 <template>
   <div class="stock-market">
-    <!-- 新增图表 -->
-    <div class="top10-chart-section">
-      <div ref="shChartRef" class="chart"></div>
-      <div ref="szChartRef" class="chart"></div>
-    </div>
-
-    <!-- 饼状图 -->
-    <div class="chart-section">
-      <div ref="chartRef1" class="chart"></div>
-      <div ref="chartRef2" class="chart"></div>
-      <div ref="chartRef3" class="chart"></div>
-    </div>
-
+    
     <div class="filter-container">
       <div class="filters">
         <div class="filter-row">
           <span class="label">市场类型：</span>
           <el-checkbox-group v-model="checkedMarkets">
-            <div v-for="market in marketList" :key="market" class="check_container">
-              <input 
-                :id="'checkbox-' + market" 
-                class="hidden" 
-                type="checkbox" 
-                :value="market" 
+            <div
+              v-for="market in marketList"
+              :key="market"
+              class="check_container"
+            >
+              <input
+                :id="'checkbox-' + market"
+                class="hidden"
+                type="checkbox"
+                :value="market"
                 v-model="checkedMarkets"
-              >
+              />
               <label class="checkbox" :for="'checkbox-' + market"></label>
               <span class="checkbox-label">{{ market }}</span>
             </div>
@@ -35,16 +27,22 @@
         <div class="filter-row">
           <span class="label">交易所：</span>
           <el-checkbox-group v-model="checkedExchanges">
-            <div v-for="exchange in exchangeList" :key="exchange" class="check_container">
-              <input 
-                :id="'checkbox-' + exchange" 
-                class="hidden" 
-                type="checkbox" 
-                :value="exchange" 
+            <div
+              v-for="exchange in exchangeList"
+              :key="exchange"
+              class="check_container"
+            >
+              <input
+                :id="'checkbox-' + exchange"
+                class="hidden"
+                type="checkbox"
+                :value="exchange"
                 v-model="checkedExchanges"
-              >
+              />
               <label class="checkbox" :for="'checkbox-' + exchange"></label>
-              <span class="checkbox-label">{{ getExchangeName(exchange) }}</span>
+              <span class="checkbox-label">{{
+                getExchangeName(exchange)
+              }}</span>
             </div>
           </el-checkbox-group>
         </div>
@@ -53,13 +51,13 @@
           <span class="label">股票类型：</span>
           <el-checkbox-group v-model="checkedHsTypes">
             <div v-for="type in isHsList" :key="type" class="check_container">
-              <input 
-                :id="'checkbox-' + type" 
-                class="hidden" 
-                type="checkbox"   
-                :value="type" 
+              <input
+                :id="'checkbox-' + type"
+                class="hidden"
+                type="checkbox"
+                :value="type"
                 v-model="checkedHsTypes"
-              >
+              />
               <label class="checkbox" :for="'checkbox-' + type"></label>
               <span class="checkbox-label">{{ getHsTypeName(type) }}</span>
             </div>
@@ -69,11 +67,7 @@
 
       <!-- 删除所选按钮移到右侧 -->
       <div class="actions">
-        <el-button 
-          type="primary" 
-          link 
-          @click="clearAllSelected"
-        >
+        <el-button type="primary" link @click="clearAllSelected">
           删除所选
         </el-button>
       </div>
@@ -83,26 +77,56 @@
     <div class="search-container">
       <form class="form">
         <label for="search">
-          <input 
-            required 
-            autocomplete="off" 
-            placeholder="请输入股票代码/名称" 
-            id="search" 
-            type="text" 
-            v-model="searchText" 
+          <input
+            required
+            autocomplete="off"
+            placeholder="请输入股票代码/名称"
+            id="search"
+            type="text"
+            v-model="searchText"
             @input="handleSearch"
-          >
+          />
           <div class="icon">
-            <svg stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="swap-on">
-              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linejoin="round" stroke-linecap="round"></path>
+            <svg
+              stroke-width="2"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="swap-on"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              ></path>
             </svg>
-            <svg stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="swap-off">
-              <path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linejoin="round" stroke-linecap="round"></path>
+            <svg
+              stroke-width="2"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="swap-off"
+            >
+              <path
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              ></path>
             </svg>
           </div>
           <button type="reset" class="close-btn" @click="searchText = ''">
-            <svg viewBox="0 0 20 20" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
-              <path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill-rule="evenodd"></path>
+            <svg
+              viewBox="0 0 20 20"
+              class="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                fill-rule="evenodd"
+              ></path>
             </svg>
           </button>
         </label>
@@ -121,10 +145,25 @@
         <el-table-column prop="area" label="地区" min-width="80" />
         <el-table-column prop="industry" label="行业" min-width="100" />
         <el-table-column prop="market" label="市场" min-width="80" />
-        <el-table-column prop="actName" label="实控人" min-width="150" show-overflow-tooltip />
+        <el-table-column
+          prop="actName"
+          label="实控人"
+          min-width="150"
+          show-overflow-tooltip
+        />
         <el-table-column prop="actEntType" label="实控人类型" min-width="100" />
-        <el-table-column prop="fullName" label="公司全称" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="enName" label="英文名称" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="fullName"
+          label="公司全称"
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="enName"
+          label="英文名称"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column prop="cnSpell" label="拼音简称" min-width="100" />
         <el-table-column prop="exchange" label="交易所" min-width="100">
           <template #default="{ row }">
@@ -134,7 +173,7 @@
         <el-table-column prop="currType" label="币种" min-width="80" />
         <el-table-column prop="listStatus" label="上市状态" min-width="100">
           <template #default="{ row }">
-            {{ row.listStatus === 'L' ? '上市' : '退市' }}
+            {{ row.listStatus === "L" ? "上市" : "退市" }}
           </template>
         </el-table-column>
         <el-table-column prop="isHs" label="股票类型" min-width="100">
@@ -142,10 +181,13 @@
             {{ getHsTypeName(row.isHs) }}
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <button class="c-button c-button--gooey" @click="handleViewDetail(row)">
+            <button
+              class="c-button c-button--gooey"
+              @click="handleViewDetail(row)"
+            >
               查看详情
               <div class="c-button__blobs">
                 <div></div>
@@ -174,17 +216,16 @@
 </template>
 
 <script>
-import { ref, onMounted, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
-import request from '@/utils/request'
-import { useRouter } from 'vue-router'
-import * as echarts from 'echarts'
+import { ref, onMounted, watch, nextTick } from "vue";
+import { ElMessage } from "element-plus";
+import { Search } from "@element-plus/icons-vue";
+import request from "@/utils/request";
+import { useRouter } from "vue-router";
 
 export default {
-  name: 'StockMarket',
+  name: "StockMarket",
   components: {
-    Search
+    Search,
   },
   data() {
     return {
@@ -192,335 +233,173 @@ export default {
       marketList: [],
       exchangeList: [],
       isHsList: [],
-      
+
       // 选中的值（改回多选）
       checkedMarkets: [],
       checkedExchanges: [],
       checkedHsTypes: [],
-      searchText: '',
-    }
+      searchText: "",
+    };
   },
   created() {
-    this.fetchFilterOptions()
+    this.fetchFilterOptions();
   },
   methods: {
     // 获取筛选条件
     async fetchFilterOptions() {
       try {
         const res = await request({
-          url: '/stock/query',
-          method: 'get'
-        })
-        
+          url: "/stock/query",
+          method: "get",
+        });
+
         if (res.code === 200) {
-          this.marketList = res.data.marketList
-          this.exchangeList = res.data.exchangeList
-          this.isHsList = res.data.isHsList
+          this.marketList = res.data.marketList;
+          this.exchangeList = res.data.exchangeList;
+          this.isHsList = res.data.isHsList;
         }
       } catch (error) {
-        console.error('获取筛选条件失败:', error)
-        ElMessage.error('获取筛选条件失败')
+        console.error("获取筛选条件失败:", error);
+        ElMessage.error("获取筛选条件失败");
       }
     },
 
     // 获取交易所名称
     getExchangeName(code) {
       const exchangeMap = {
-        'SZSE': '深交所',
-        'SSE': '上交所',
-        'BSE': '北交所'
-      }
-      return exchangeMap[code] || code
+        SZSE: "深交所",
+        SSE: "上交所",
+        BSE: "北交所",
+      };
+      return exchangeMap[code] || code;
     },
 
     // 获取股票类型名称
     getHsTypeName(code) {
       const typeMap = {
-        'S': '沪股通',
-        'N': '普通股票',
-        'H': '深股通'
-      }
-      return typeMap[code] || code
+        S: "沪股通",
+        N: "普通股票",
+        H: "深股通",
+      };
+      return typeMap[code] || code;
     },
 
     clearAllSelected() {
-      this.checkedMarkets = []
-      this.checkedExchanges = []
-      this.checkedHsTypes = []
+      this.checkedMarkets = [];
+      this.checkedExchanges = [];
+      this.checkedHsTypes = [];
     },
 
     handleSearch() {
       // TODO: 实现搜索逻辑
-      console.log('搜索:', this.searchText)
-    }
+      console.log("搜索:", this.searchText);
+    },
   },
   setup() {
-    const router = useRouter()
-    const loading = ref(false)
-    const tableData = ref([])
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const searchText = ref('')
-    const checkedMarkets = ref([])
-    const checkedExchanges = ref([])
-    const checkedHsTypes = ref([])
-    const chartRef1 = ref(null)
-    const chartRef2 = ref(null)
-    const chartRef3 = ref(null)
-    const shChartRef = ref(null)
-    const szChartRef = ref(null)
-    let chartInstance1 = null
-    let chartInstance2 = null
-    let chartInstance3 = null
-    let shChartInstance = null
-    let szChartInstance = null
+    const router = useRouter();
+    const loading = ref(false);
+    const tableData = ref([]);
+    const page = ref(1);
+    const pageSize = ref(10);
+    const total = ref(0);
+    const searchText = ref("");
+    const checkedMarkets = ref([]);
+    const checkedExchanges = ref([]);
+    const checkedHsTypes = ref([]);
 
     const fetchData = async () => {
-      loading.value = true
+      loading.value = true;
       try {
         // 创建 URLSearchParams 对象来正确处理多个相同参数
-        const params = new URLSearchParams()
-        
+        const params = new URLSearchParams();
+
         // 添加基础参数
-        params.append('page', page.value)
-        params.append('pageSize', pageSize.value)
-        
+        params.append("page", page.value);
+        params.append("pageSize", pageSize.value);
+
         // 添加搜索参数
         if (searchText.value) {
-          params.append('search', searchText.value)
+          params.append("search", searchText.value);
         }
-        
+
         // 添加多个市场类型
-        checkedMarkets.value.forEach(market => {
-          params.append('market', market)
-        })
-        
+        checkedMarkets.value.forEach((market) => {
+          params.append("market", market);
+        });
+
         // 添加多个交易所
-        checkedExchanges.value.forEach(exchange => {
-          params.append('exchange', exchange)
-        })
-        
+        checkedExchanges.value.forEach((exchange) => {
+          params.append("exchange", exchange);
+        });
+
         // 添加多个股票类型
-        checkedHsTypes.value.forEach(type => {
-          params.append('isHs', type)
-        })
+        checkedHsTypes.value.forEach((type) => {
+          params.append("isHs", type);
+        });
 
         const res = await request({
           url: `/stock/list?${params.toString()}`,
-          method: 'get'
-        })
-        
-        tableData.value = res.data.list
-        total.value = res.data.totalPageNum * pageSize.value
+          method: "get",
+        });
+
+        tableData.value = res.data.list;
+        total.value = res.data.totalPageNum * pageSize.value;
       } catch (error) {
-        console.error('获取数据失败:', error)
-        ElMessage.error('获取数据失败')
+        console.error("获取数据失败:", error);
+        ElMessage.error("获取数据失败");
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const handleSizeChange = (val) => {
-      pageSize.value = val
-      page.value = 1
-      fetchData()
-    }
+      pageSize.value = val;
+      page.value = 1;
+      fetchData();
+    };
 
     const handleCurrentChange = (val) => {
-      page.value = val
-      fetchData()
-    }
+      page.value = val;
+      fetchData();
+    };
 
     // 监听筛选条件变化
-    watch([searchText, checkedMarkets, checkedExchanges, checkedHsTypes], () => {
-      page.value = 1
-      fetchData()
-    })
+    watch(
+      [searchText, checkedMarkets, checkedExchanges, checkedHsTypes],
+      () => {
+        page.value = 1;
+        fetchData();
+      }
+    );
 
     onMounted(() => {
-      fetchData()
-      fetchTop10Data()
-      fetchGraphData()
-    })
+      fetchData();
+    });
 
     // 查看详情前检查数据是否存在
     const handleViewDetail = async (row) => {
       try {
         const res = await request({
-          url: '/stock/have',
-          method: 'get',
-          params: { id: row.id }
-        })
+          url: "/stock/have",
+          method: "get",
+          params: { id: row.id },
+        });
 
         if (res.code === 200) {
           if (res.data.have) {
             router.push({
-              name: 'StockDetail',
-              params: { id: row.id }
-            })
+              name: "StockDetail",
+              params: { id: row.id },
+            });
           } else {
-            ElMessage.warning('暂无该股票数据')
+            ElMessage.warning("暂无该股票数据");
           }
         }
       } catch (error) {
-        console.error('检查股票数据失败:', error)
-        ElMessage.error('检查股票数据失败')
+        console.error("检查股票数据失败:", error);
+        ElMessage.error("检查股票数据失败");
       }
-    }
-
-    // 初始化图表
-    const initChart = (chartRef, data, title, labels) => {
-      const chartInstance = echarts.init(chartRef.value)
-
-      const option = {
-        title: {
-          text: title,
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: {
-          bottom: '10%',
-          left: 'center'
-        },
-        series: [
-          {
-            name: title,
-            type: 'pie',
-            radius: '50%',
-            data: Object.entries(data).map(([key, value]) => ({
-              value,
-              name: labels[key] || key
-            })),
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
-      }
-
-      chartInstance.setOption(option)
-      return chartInstance
-    }
-
-    // 获取图表数据
-    const fetchGraphData = async () => {
-      try {
-        const res = await request({
-          url: '/stock/graph',
-          method: 'get'
-        })
-
-        if (res.code === 200) {
-          setTimeout(() => {
-            chartInstance1 = initChart(chartRef1, res.data.isHs, '股票类型分布', {
-              H: '沪股通',
-              S: '深股通',
-              N: '普通股票'
-            })
-            chartInstance2 = initChart(chartRef2, res.data.exchange, '交易所分布', {
-              BSE: '北交所',
-              SSE: '上交所',
-              SZSE: '深交所'
-            })
-            chartInstance3 = initChart(chartRef3, res.data.market, '市场类型分布', {})
-          }, 100) // 延迟 100 毫秒
-        } else {
-          ElMessage.error('获取图表数据失败')
-        }
-      } catch (error) {
-        console.error('获取图表数据失败:', error)
-        ElMessage.error('获取图表数据失败')
-      }
-    }
-
-    const fetchTop10Data = async () => {
-      try {
-        const res = await request({
-          url: '/stock/hsgt/top10',
-          method: 'get'
-        })
-
-        if (res.code === 200) {
-          const { shList, szList } = res.data
-          const shData = shList.map(item => ({ name: item.name, value: item.amount }))
-          const szData = szList.map(item => ({ name: item.name, value: item.amount }))
-
-          // 初始化沪市图表
-          shChartInstance = echarts.init(shChartRef.value)
-          const shOption = {
-            title: {
-              text: '沪市十大成交股',
-              left: 'center'
-            },
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'shadow'
-              }
-            },
-            xAxis: {
-              type: 'value',
-              boundaryGap: [0, 0.01]
-            },
-            yAxis: {
-              type: 'category',
-              data: shData.map(item => item.name)
-            },
-            series: [
-              {
-                name: '成交金额',
-                type: 'bar',
-                data: shData.map(item => item.value)
-              }
-            ]
-          }
-          shChartInstance.setOption(shOption)
-
-          // 初始化深市图表
-          szChartInstance = echarts.init(szChartRef.value)
-          const szOption = {
-            title: {
-              text: '深市十大成交股',
-              left: 'center'
-            },
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'shadow'
-              }
-            },
-            xAxis: {
-              type: 'value',
-              boundaryGap: [0, 0.01]
-            },
-            yAxis: {
-              type: 'category',
-              data: szData.map(item => item.name)
-            },
-            series: [
-              {
-                name: '成交金额',
-                type: 'bar',
-                data: szData.map(item => item.value)
-              }
-            ]
-          }
-          szChartInstance.setOption(szOption)
-        } else {
-          ElMessage.error('获取沪深市十大成交股数据失败')
-        }
-      } catch (error) {
-        console.error('获取沪深市十大成交股数据失败:', error)
-        ElMessage.error('获取沪深市十大成交股数据失败')
-      }
-    }
+    };
 
     return {
       loading,
@@ -536,39 +415,15 @@ export default {
       handleCurrentChange,
       fetchData,
       handleViewDetail,
-      chartRef1,
-      chartRef2,
-      chartRef3,
-      shChartRef,
-      szChartRef
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style scoped>
 .stock-market {
   padding: 30px;
   background-color: #f9f9f9;
-}
-
-.top10-chart-section {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  height: 400px;
-}
-
-.chart {
-  width: 48%;
-  height: 100%;
-}
-
-.chart-section {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  height: 400px; /* 确保有明确的高度 */
 }
 
 .filter-container {
@@ -614,7 +469,7 @@ export default {
 
 /* 自定义复选框样式 */
 :deep(.el-checkbox__input .el-checkbox__inner) {
-  border-radius: 2px;  /* 方形复选框 */
+  border-radius: 2px; /* 方形复选框 */
 }
 
 :deep(.el-checkbox__label) {
@@ -665,7 +520,7 @@ export default {
 }
 
 :deep(.el-input) {
-  flex: 1;  /* 搜索框占满剩余空间 */
+  flex: 1; /* 搜索框占满剩余空间 */
 }
 
 :deep(.el-input__wrapper) {
@@ -673,7 +528,7 @@ export default {
 }
 
 :deep(.el-button) {
-  min-width: 80px;  /* 确保按钮有固定最小宽度 */
+  min-width: 80px; /* 确保按钮有固定最小宽度 */
 }
 
 .table-container {
@@ -758,7 +613,7 @@ export default {
   --padding: 1.5em;
   --rotate: 80deg;
   --gap: 2em;
-  --icon-change-color: #15A986;
+  --icon-change-color: #15a986;
   --height: 40px;
   width: 100%;
   padding-inline-end: 1em;
@@ -785,7 +640,7 @@ export default {
 
 .form svg {
   color: #111;
-  transition: 0.3s cubic-bezier(.4,0,.2,1);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   height: 15px;
 }
@@ -793,7 +648,7 @@ export default {
 .icon {
   position: absolute;
   left: var(--padding);
-  transition: 0.3s cubic-bezier(.4,0,.2,1);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -841,7 +696,7 @@ export default {
 }
 
 .form input:valid ~ .icon {
-  transform: scale(1.3) rotate(var(--rotate))
+  transform: scale(1.3) rotate(var(--rotate));
 }
 
 .form input:valid ~ .icon .swap-off {
@@ -866,7 +721,7 @@ button {
   border: none;
   display: block;
   position: relative;
-  padding: 1.0em 2.8em;
+  padding: 1em 2.8em;
   font-size: 12px;
   background: transparent;
   cursor: pointer;

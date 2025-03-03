@@ -8,10 +8,22 @@ import FundMarket from "@/views/tabs/FundMarket.vue";
 import FuturesData from "@/views/tabs/FuturesData.vue";
 import Economics from "@/views/tabs/Economics.vue";
 import UserProfile from '@/views/UserProfile.vue'
+import MainPage from "@/views/MainPage.vue"; 
+import AboutPage from '@/views/AboutPage.vue' 
 
 const routes = [
   {
     path: "/",
+    name: "Main",
+    component: MainPage,
+  },
+  {
+    path: '/about',
+    name: 'AboutPage',
+    component: AboutPage // 添加新路由
+  },
+  {
+    path: "/home/",
     name: "Home",
     component: Home,
     children: [
