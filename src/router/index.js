@@ -11,6 +11,7 @@ import UserProfile from '@/views/UserProfile.vue'
 import MainPage from "@/views/MainPage.vue"; 
 import AboutPage from '@/views/AboutPage.vue' 
 
+
 const routes = [
   {
     path: "/",
@@ -81,7 +82,7 @@ const routes = [
     path: '/user-profile',
     name: 'UserProfile',
     component: UserProfile
-  }
+  },
 ];
 
 const router = createRouter({

@@ -14,6 +14,27 @@
       </ul>
     </nav>
 
+    <!-- 搜索框区域 -->
+    <div class="search-bar">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="搜索功能..."
+        @input="updateSuggestions"
+      />
+      <button @click="search">搜索</button>
+      <!-- 显示建议列表 -->
+      <ul v-if="suggestions.length" class="suggestions">
+        <li
+          v-for="(suggestion, index) in suggestions"
+          :key="index"
+          @click="selectSuggestion(suggestion)"
+        >
+          {{ suggestion }}
+        </li>
+      </ul>
+    </div>
+
     <!-- Hero 区域 -->
     <section class="hero">
       <h2>探索金融世界的新视角</h2>
@@ -25,9 +46,14 @@
       <div class="futures-calendar">
         <h2>交易日历</h2>
         <div class="calendar-grid">
-          <div v-for="(day, index) in calendarData" :key="index" :class="{ open: day.isOpen, closed: !day.isOpen }" class="calendar-day">
+          <div
+            v-for="(day, index) in calendarData"
+            :key="index"
+            :class="{ open: day.isOpen, closed: !day.isOpen }"
+            class="calendar-day"
+          >
             <div>{{ day.calDate }}</div>
-            <div>{{ day.isOpen ? '开放' : '关闭' }}</div>
+            <div>{{ day.isOpen ? "开放" : "关闭" }}</div>
           </div>
         </div>
       </div>
@@ -65,144 +91,181 @@
 </template>
 
 <script>
-import request from '@/utils/request'
-import * as echarts from 'echarts'
+import request from "@/utils/request";
+import * as echarts from "echarts";
 
 export default {
-  name: 'MainPage',
+  name: "MainPage",
   data() {
     return {
       calendarData: [],
-      top10Stocks: []
-    }
+      top10Stocks: [],
+      searchQuery: "",
+      features: ["上市公司", "股票市场", "公募基金", "期货数据", "宏观经济"],
+      suggestions: [],
+    };
   },
   created() {
-    this.fetchCalendarData()
-    this.fetchTop10Data()
-    this.fetchGraphData()
+    this.fetchCalendarData();
+    this.fetchTop10Data();
+    this.fetchGraphData();
   },
   methods: {
     fetchCalendarData() {
-      request.get('/fut/cal')
-        .then(response => {
+      request
+        .get("/fut/cal")
+        .then((response) => {
           if (response.code === 200) {
-            this.calendarData = response.data.sse
+            this.calendarData = response.data.sse;
           }
         })
-        .catch(error => {
-          console.error('获取日历数据失败:', error)
-        })
+        .catch((error) => {
+          console.error("获取日历数据失败:", error);
+        });
     },
     fetchTop10Data() {
-      request.get('/stock/hsgt/top10')
-        .then(response => {
+      request
+        .get("/stock/hsgt/top10")
+        .then((response) => {
           if (response.code === 200) {
-            const { shList, szList } = response.data
-            const shData = shList.map(item => ({ name: item.name, value: item.amount }))
-            const szData = szList.map(item => ({ name: item.name, value: item.amount }))
+            const { shList, szList } = response.data;
+            const shData = shList.map((item) => ({
+              name: item.name,
+              value: item.amount,
+            }));
+            const szData = szList.map((item) => ({
+              name: item.name,
+              value: item.amount,
+            }));
 
             // 初始化沪市图表
-            const shChartInstance = echarts.init(this.$refs.shChartRef)
+            const shChartInstance = echarts.init(this.$refs.shChartRef);
             const shOption = {
               title: {
-                text: '沪市十大成交股',
-                left: 'center'
+                text: "沪市十大成交股",
+                left: "center",
               },
               tooltip: {
-                trigger: 'axis',
+                trigger: "axis",
                 axisPointer: {
-                  type: 'shadow'
-                }
+                  type: "shadow",
+                },
               },
               xAxis: {
-                type: 'value',
-                boundaryGap: [0, 0.01]
+                type: "value",
+                boundaryGap: [0, 0.01],
               },
               yAxis: {
-                type: 'category',
-                data: shData.map(item => item.name)
+                type: "category",
+                data: shData.map((item) => item.name),
               },
               series: [
                 {
-                  name: '成交金额',
-                  type: 'bar',
-                  data: shData.map(item => item.value)
-                }
-              ]
-            }
-            shChartInstance.setOption(shOption)
+                  name: "成交金额",
+                  type: "bar",
+                  data: shData.map((item) => item.value),
+                },
+              ],
+            };
+            shChartInstance.setOption(shOption);
 
             // 初始化深市图表
-            const szChartInstance = echarts.init(this.$refs.szChartRef)
+            const szChartInstance = echarts.init(this.$refs.szChartRef);
             const szOption = {
               title: {
-                text: '深市十大成交股',
-                left: 'center'
+                text: "深市十大成交股",
+                left: "center",
               },
               tooltip: {
-                trigger: 'axis',
+                trigger: "axis",
                 axisPointer: {
-                  type: 'shadow'
-                }
+                  type: "shadow",
+                },
               },
               xAxis: {
-                type: 'value',
-                boundaryGap: [0, 0.01]
+                type: "value",
+                boundaryGap: [0, 0.01],
               },
               yAxis: {
-                type: 'category',
-                data: szData.map(item => item.name)
+                type: "category",
+                data: szData.map((item) => item.name),
               },
               series: [
                 {
-                  name: '成交金额',
-                  type: 'bar',
-                  data: szData.map(item => item.value)
-                }
-              ]
-            }
-            szChartInstance.setOption(szOption)
+                  name: "成交金额",
+                  type: "bar",
+                  data: szData.map((item) => item.value),
+                },
+              ],
+            };
+            szChartInstance.setOption(szOption);
           } else {
-            console.error('获取沪深市十大成交股数据失败')
+            console.error("获取沪深市十大成交股数据失败");
           }
         })
-        .catch(error => {
-          console.error('获取沪深市十大成交股数据失败:', error)
-        })
+        .catch((error) => {
+          console.error("获取沪深市十大成交股数据失败:", error);
+        });
     },
     fetchGraphData() {
-      request.get('/fund/graph')
-        .then(response => {
+      request
+        .get("/fund/graph")
+        .then((response) => {
           if (response.code === 200) {
-            this.renderRadioChart(response.data.radio)
-            this.renderInstChart(response.data.inst)
+            this.renderRadioChart(response.data.radio);
+            this.renderInstChart(response.data.inst);
           } else {
-            console.error('获取图表数据失败')
+            console.error("获取图表数据失败");
           }
         })
-        .catch(error => {
-          console.error('获取图表数据失败:', error)
-        })
+        .catch((error) => {
+          console.error("获取图表数据失败:", error);
+        });
     },
     renderRadioChart(data) {
-      const chart = echarts.init(this.$refs.radioChartRef)
+      const chart = echarts.init(this.$refs.radioChartRef);
       const option = {
-        title: { text: '各类型占比', left: 'center' },
-        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-        legend: { top: 'bottom', padding: [10, 0, 0, 0] },
-        grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-        xAxis: { type: 'category', data: data.map(item => item.year) },
-        yAxis: { type: 'value' },
+        title: { text: "各类型占比", left: "center" },
+        tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+        legend: { top: "bottom", padding: [10, 0, 0, 0] },
+        grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
+        xAxis: { type: "category", data: data.map((item) => item.year) },
+        yAxis: { type: "value" },
         series: [
-          { name: '商业银行', type: 'bar', stack: 'total', data: data.map(item => item.bank) },
-          { name: '证券公司', type: 'bar', stack: 'total', data: data.map(item => item.secComp) },
-          { name: '基金公司直销', type: 'bar', stack: 'total', data: data.map(item => item.fundComp) },
-          { name: '独立基金销售机构', type: 'bar', stack: 'total', data: data.map(item => item.indepComp) },
-          { name: '其他', type: 'bar', stack: 'total', data: data.map(item => item.rests) }
-        ]
-      }
-      chart.setOption(option)
-      window.addEventListener('resize', () => chart.resize())
+          {
+            name: "商业银行",
+            type: "bar",
+            stack: "total",
+            data: data.map((item) => item.bank),
+          },
+          {
+            name: "证券公司",
+            type: "bar",
+            stack: "total",
+            data: data.map((item) => item.secComp),
+          },
+          {
+            name: "基金公司直销",
+            type: "bar",
+            stack: "total",
+            data: data.map((item) => item.fundComp),
+          },
+          {
+            name: "独立基金销售机构",
+            type: "bar",
+            stack: "total",
+            data: data.map((item) => item.indepComp),
+          },
+          {
+            name: "其他",
+            type: "bar",
+            stack: "total",
+            data: data.map((item) => item.rests),
+          },
+        ],
+      };
+      chart.setOption(option);
+      window.addEventListener("resize", () => chart.resize());
     },
     renderInstChart(data) {
       // 确保只处理20条数据
@@ -213,28 +276,71 @@ export default {
 
       const chart = echarts.init(this.$refs.instChartRef);
       chart.setOption({
-        title: { text: '机构排名', left: 'center' },
-        legend: { top: 'bottom', padding: [10, 0, 0, 0] },
-        grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-        xAxis: { 
-          type: 'category', 
-          data: limitedData.map(item => `${item.instName} (${item.year} ${item.quarter})`),
-          axisLabel: { interval: 0, rotate: 30, fontSize: 10 } // 调整标签旋转和字体大小
+        title: { text: "机构排名", left: "center" },
+        legend: { top: "bottom", padding: [10, 0, 0, 0] },
+        grid: { left: "3%", right: "4%", bottom: "15%", containLabel: true },
+        xAxis: {
+          type: "category",
+          data: limitedData.map(
+            (item) => `${item.instName} (${item.year} ${item.quarter})`
+          ),
+          axisLabel: { interval: 0, rotate: 30, fontSize: 10 }, // 调整标签旋转和字体大小
         },
-        yAxis: { type: 'value' },
+        yAxis: { type: "value" },
         series: [
-          { name: '基金规模', type: 'bar', data: limitedData.map(item => item.fundScale) },
-          { name: '总规模', type: 'bar', data: limitedData.map(item => item.scale) }
+          {
+            name: "基金规模",
+            type: "bar",
+            data: limitedData.map((item) => item.fundScale),
+          },
+          {
+            name: "总规模",
+            type: "bar",
+            data: limitedData.map((item) => item.scale),
+          },
         ],
         dataZoom: [
-          { type: 'inside', start: 0, end: 100 }, // 显示所有数据
-          { type: 'slider', start: 0, end: 100, bottom: 20 }
-        ]
+          { type: "inside", start: 0, end: 100 }, // 显示所有数据
+          { type: "slider", start: 0, end: 100, bottom: 20 },
+        ],
       });
-      window.addEventListener('resize', () => chart.resize());
-    }
-  }
-}
+      window.addEventListener("resize", () => chart.resize());
+    },
+    updateSuggestions() {
+      const query = this.searchQuery.toLowerCase();
+      if (query) {
+        this.suggestions = this.features.filter((feature) =>
+          feature.toLowerCase().includes(query)
+        );
+      } else {
+        this.suggestions = [];
+      }
+    },
+    selectSuggestion(suggestion) {
+      this.searchQuery = suggestion;
+      this.suggestions = [];
+      this.search();
+    },
+    search() {
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        if (query.includes("上市公司")) {
+          window.location.href = "/home/company";
+        } else if (query.includes("股票市场")) {
+          window.location.href = "/home/stock";
+        } else if (query.includes("公募基金")) {
+          window.location.href = "/home/fund";
+        } else if (query.includes("期货数据")) {
+          window.location.href = "/home/futures";
+        } else if (query.includes("宏观经济")) {
+          window.location.href = "/home/economics";
+        } else {
+          alert("未找到相关功能");
+        }
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -244,15 +350,15 @@ export default {
 }
 
 .header {
-  background: linear-gradient(to right, #4F46E5, #3B82F6);
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
   color: white;
   padding: 20px;
   text-align: center;
 }
 
 .navbar {
-  background-color: #F9FAFB;
-  border-bottom: 1px solid #E5E7EB;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
   padding: 10px;
 }
 
@@ -273,7 +379,7 @@ export default {
 }
 
 .hero {
-  background-color: #EFF6FF;
+  background-color: #eff6ff;
   padding: 40px;
   border-radius: 10px;
   margin: 20px;
@@ -281,11 +387,11 @@ export default {
 }
 
 .hero h2 {
-  color: #1E40AF;
+  color: #1e40af;
 }
 
 .hero p {
-  color: #1E3A8A;
+  color: #1e3a8a;
 }
 
 .content {
@@ -296,7 +402,7 @@ export default {
 
 .futures-calendar {
   background-color: white;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -338,7 +444,7 @@ export default {
 }
 
 .footer {
-  background: linear-gradient(to right, #3B82F6, #4F46E5);
+  background: linear-gradient(to right, #3b82f6, #4f46e5);
   color: white;
   text-align: center;
   padding: 10px;
@@ -346,7 +452,7 @@ export default {
 
 .top10-stocks {
   background-color: white;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -373,7 +479,7 @@ export default {
 
 .fund-graph {
   background-color: white;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -383,5 +489,58 @@ export default {
 .chart {
   width: 100%;
   height: 400px;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  position: relative; /* 使建议列表相对于搜索框定位 */
+}
+
+.search-bar input {
+  padding: 8px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.search-bar button {
+  padding: 8px 16px;
+  font-size: 1em;
+  color: white;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #3b82f6;
+}
+
+.suggestions {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: absolute; /* 绝对定位 */
+  top: 40px; /* 调整位置 */
+  z-index: 10; /* 确保浮动在最上层 */
+}
+
+.suggestions li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
 }
 </style>
