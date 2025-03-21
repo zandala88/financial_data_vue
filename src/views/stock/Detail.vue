@@ -409,7 +409,7 @@ export default {
 
     // 返回上一页
     const handleBack = () => {
-      router.back();
+      router.push({ name: 'StockMarket' });
     };
 
     // 查看利润表
