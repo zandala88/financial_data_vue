@@ -9,7 +9,7 @@
         </el-button>
       </div>
       <div class="header-title">
-        <h2>涨跌排行榜</h2>
+        <h2>预测涨跌排行榜</h2>
       </div>
       <div class="header-right">
         <el-select v-model="size" @change="fetchAllData" class="size-select">
