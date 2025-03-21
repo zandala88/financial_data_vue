@@ -9,8 +9,8 @@ import FuturesData from "@/views/tabs/FuturesData.vue";
 import Economics from "@/views/tabs/Economics.vue";
 import UserProfile from '@/views/UserProfile.vue'
 import MainPage from "@/views/MainPage.vue"; 
-import AboutPage from '@/views/AboutPage.vue' 
-
+import AboutPage from '@/views/AboutPage.vue'
+import UpDownRank from '@/views/UpDownRank.vue'
 
 const routes = [
   {
@@ -21,7 +21,12 @@ const routes = [
   {
     path: '/about',
     name: 'AboutPage',
-    component: AboutPage // 添加新路由
+    component: AboutPage
+  },
+  {
+    path: '/up-down',
+    name: 'UpDownRank',
+    component: UpDownRank
   },
   {
     path: "/home/",

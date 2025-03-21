@@ -10,6 +10,7 @@
       <ul>
         <li><a href="/user-profile">个人中心</a></li>
         <li><a href="/home" target="_blank">数据概览</a></li>
+        <li><a href="/up-down">涨跌排行</a></li>
         <li><a href="/about">关于</a></li>
       </ul>
     </nav>
