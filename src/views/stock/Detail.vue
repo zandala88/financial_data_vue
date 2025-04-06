@@ -68,10 +68,28 @@
     </div>
 
     <!-- 预测结果弹窗 -->
+    <!-- <div v-if="isPredictionModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="close" @click="closePredictionModal">&times;</div>
+        <h3>预测结果</h3>
+        <div ref="predictionChartRef" style="width: 100%; height: 600px"></div>
+      </div>
+    </div> -->
+
     <div v-if="isPredictionModalOpen" class="modal">
       <div class="modal-content">
         <div class="close" @click="closePredictionModal">&times;</div>
         <h3>预测结果</h3>
+        <div class="prediction-metrics">
+          <div class="metric-item">
+            <span class="metric-label">涨跌准确率:</span>
+            <span class="metric-value">{{ accuracyData.accuracy }}%</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">R² 决定系数:</span>
+            <span class="metric-value">{{ accuracyData.r2 }}%</span>
+          </div>
+        </div>
         <div ref="predictionChartRef" style="width: 100%; height: 600px"></div>
       </div>
     </div>
@@ -293,7 +311,11 @@ export default {
     const md = new MarkdownIt({
       breaks: false, // 禁用自动换行
     });
-
+    const accuracyData = ref({
+      accuracy: "",
+      r2: "",
+    });
+    
     // 更新关注状态
     const updateFollowStatus = debounce(async () => {
       try {
@@ -409,7 +431,7 @@ export default {
 
     // 返回上一页
     const handleBack = () => {
-      router.push({ name: 'StockMarket' });
+      router.push({ name: "StockMarket" });
     };
 
     // 查看利润表
@@ -989,7 +1011,7 @@ export default {
     const togglePredictionModal = async () => {
       isPredictionModalOpen.value = !isPredictionModalOpen.value;
       if (isPredictionModalOpen.value) {
-        await fetchPredictionData();
+        await Promise.all([fetchPredictionData(), fetchAccuracyData()]);
       }
     };
 
@@ -1014,6 +1036,25 @@ export default {
       } catch (error) {
         console.error("获取预测数据失败:", error);
         ElMessage.error("获取预测数据失败");
+      }
+    };
+
+    const fetchAccuracyData = async () => {
+      try {
+        const res = await request({
+          url: "/stock/accuracy",
+          method: "get",
+          params: { id: route.params.id },
+        });
+
+        if (res.code === 200) {
+          accuracyData.value = res.data;
+        } else {
+          ElMessage.warning("获取准确率数据失败");
+        }
+      } catch (error) {
+        console.error("获取准确率数据失败:", error);
+        ElMessage.error("获取准确率数据失败");
       }
     };
 
@@ -1091,7 +1132,7 @@ export default {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          "http://110.41.11.12:8877/api/v1/stock/ai?id="+ route.params.id,
+          "http://110.41.11.12:8877/api/v1/stock/ai?id=" + route.params.id,
           {
             method: "GET",
             headers: {
@@ -1330,6 +1371,7 @@ export default {
       toggleAIAnalysisModal,
       closeAIAnalysisModal,
       renderMarkdown,
+      accuracyData,
     };
   },
 };
@@ -1783,5 +1825,33 @@ button:hover {
   overflow: hidden; /* 隐藏溢出文本 */
   text-overflow: ellipsis; /* 使用省略号表示溢出文本 */
   word-wrap: break-word; /* 允许长单词换行 */
+}
+
+.prediction-metrics {
+  margin: 20px 0; /* 修改边距，确保与标题和图表之间有适当间距 */
+  display: flex;
+  justify-content: center; /* 居中对齐 */
+  gap: 40px; /* 两个指标之间的间距 */
+}
+
+.metric-item {
+  padding: 15px 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 200px; /* 设置最小宽度确保布局统一 */
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 16px;
+  color: #666;
+  margin-right: 10px; /* 标签和数值之间的间距 */
+}
+
+.metric-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
 }
 </style>
