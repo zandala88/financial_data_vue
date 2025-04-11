@@ -1011,32 +1011,12 @@ export default {
     const togglePredictionModal = async () => {
       isPredictionModalOpen.value = !isPredictionModalOpen.value;
       if (isPredictionModalOpen.value) {
-        await Promise.all([fetchPredictionData(), fetchAccuracyData()]);
+        await fetchAccuracyData();
       }
     };
 
     const closePredictionModal = () => {
       isPredictionModalOpen.value = false;
-    };
-
-    const fetchPredictionData = async () => {
-      try {
-        const res = await request({
-          url: "/stock/predict",
-          method: "get",
-          params: { id: route.params.id },
-        });
-
-        if (res.code === 200) {
-          predictionData.value = res.data;
-          renderPredictionChart();
-        } else {
-          ElMessage.warning("获取预测数据失败");
-        }
-      } catch (error) {
-        console.error("获取预测数据失败:", error);
-        ElMessage.error("获取预测数据失败");
-      }
     };
 
     const fetchAccuracyData = async () => {
@@ -1049,6 +1029,8 @@ export default {
 
         if (res.code === 200) {
           accuracyData.value = res.data;
+          predictionData.value = res.data; // 使用 accuracy 接口返回的数据更新 predictionData
+          renderPredictionChart();
         } else {
           ElMessage.warning("获取准确率数据失败");
         }
