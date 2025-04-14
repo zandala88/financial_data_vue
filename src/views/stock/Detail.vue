@@ -61,7 +61,7 @@
         </button>
         <button class="new-button" @click="toggleModal">利润表</button>
         <button class="new-button" @click="toggleForecastModal">
-          业绩预告
+          业绩报告
         </button>
         <button class="new-button" @click="toggleTop10Modal">十大股东</button>
       </div>
@@ -98,22 +98,71 @@
     <div v-if="isModalOpen" class="modal">
       <div class="modal-content">
         <div class="close" @click="closeModal">&times;</div>
-        <div
-          ref="incomeChartRef"
-          style="width: 100%; height: 400px; margin-top: 40px"
-        ></div>
-        <div
-          ref="epsChartRef"
-          style="width: 100%; height: 200px; margin-top: 20px"
-        ></div>
-        <div
-          ref="taxChartRef"
-          style="width: 100%; height: 200px; margin-top: 20px"
-        ></div>
+        <h2 class="modal-title">利润表分析</h2>
+        
+        <!-- 营业收支分析 -->
+        <div class="chart-section">
+          <h3 class="chart-section-title">营业收支分析</h3>
+          <div class="chart-description">
+            <p>此图表展示了公司的营业收入、成本及利润情况：</p>
+            <ul>
+              <li>营业总收入：反映公司的整体经营规模</li>
+              <li>营业总成本：包括原材料、人工、制造费用等各项支出</li>
+              <li>利润总额：反映公司的整体盈利能力</li>
+              <li>净利润：最终归属于股东的利润</li>
+            </ul>
+            <p>数据变动分析：</p>
+            <ul>
+              <li>收入增长但利润下降：可能表示成本控制出现问题</li>
+              <li>收入利润同步增长：表示经营效率提升</li>
+              <li>收入下降但利润上升：可能表示成本控制改善</li>
+            </ul>
+          </div>
+          <div ref="incomeChartRef" style="width: 100%; height: 400px"></div>
+        </div>
+
+        <!-- 每股收益分析 -->
+        <div class="chart-section">
+          <h3 class="chart-section-title">每股收益分析</h3>
+          <div class="chart-description">
+            <p>基本每股收益(EPS)是衡量公司盈利能力的重要指标：</p>
+            <ul>
+              <li>EPS上升：表示公司盈利能力增强，股东回报提高</li>
+              <li>EPS下降：可能表示公司经营效率下降或股本扩张</li>
+              <li>EPS波动：反映公司经营的稳定性</li>
+            </ul>
+            <p>投资参考：</p>
+            <ul>
+              <li>持续增长的EPS通常意味着较好的投资价值</li>
+              <li>EPS与股价的比值(市盈率)是重要的估值指标</li>
+            </ul>
+          </div>
+          <div ref="epsChartRef" style="width: 100%; height: 300px"></div>
+        </div>
+
+        <!-- 所得税分析 -->
+        <div class="chart-section">
+          <h3 class="chart-section-title">所得税费用分析</h3>
+          <div class="chart-description">
+            <p>所得税费用反映了公司的税收负担：</p>
+            <ul>
+              <li>所得税率变化：可能反映税收政策调整或公司享受税收优惠</li>
+              <li>所得税与利润的关系：反映实际税负水平</li>
+              <li>异常波动：可能涉及税收筹划或会计处理变更</li>
+            </ul>
+            <p>分析要点：</p>
+            <ul>
+              <li>关注所得税率是否合理</li>
+              <li>注意是否存在税收优惠政策</li>
+              <li>警惕异常的税收波动</li>
+            </ul>
+          </div>
+          <div ref="taxChartRef" style="width: 100%; height: 300px"></div>
+        </div>
       </div>
     </div>
 
-    <!-- 业绩预告弹窗 -->
+    <!-- 业绩报告弹窗 -->
     <div v-if="isForecastModalOpen" class="modal">
       <div class="modal-content">
         <div class="close" @click="closeForecastModal">&times;</div>
@@ -121,7 +170,7 @@
           ref="forecastChartRef"
           style="width: 100%; height: 300px; margin-top: 70px"
         ></div>
-        <!-- 新增表格展示业绩预告数据 -->
+        <!-- 新增表格展示业绩报告数据 -->
         <table class="forecast-table">
           <thead>
             <tr>
@@ -144,7 +193,7 @@
               <td>{{ item.netProfitMin }}</td>
               <td>{{ item.netProfitMax }}</td>
               <td>{{ item.lastParentNet }}</td>
-              <td>{{ item.changeReason }}</td>
+              <td class="reason-cell" @click="showReason(item.changeReason)">{{ item.changeReason }}</td>
             </tr>
           </tbody>
         </table>
@@ -155,10 +204,13 @@
     <div v-if="isTop10ModalOpen" class="modal">
       <div class="modal-content">
         <div class="close" @click="closeTop10Modal">&times;</div>
-        <div
-          ref="top10PieChartRef"
-          style="width: 100%; height: 400px; margin-top: 20px"
-        ></div>
+        <div class="pie-chart-container">
+          <div
+            ref="top10PieChartRef"
+            style="width: 100%; height: 450px; margin-top: 10px"
+          ></div>
+          <div class="pie-chart-title">股东持股比例变化</div>
+        </div>
         <table class="top10-table">
           <thead>
             <tr>
@@ -226,7 +278,21 @@
       <div class="chart-title">K线图</div>
       <div ref="chartRef" style="width: 100%; height: 400px"></div>
       <div class="chart-description">
-        K线图显示股票价格的变动。红色表示收盘价高于开盘价（上涨），绿色表示收盘价低于开盘价（下跌）。
+        <h4>K线图走势分析</h4>
+        <p>K线图走势反映了股票价格的变动趋势：</p>
+        <ul>
+          <li>上升趋势：连续出现多个红色K线，且每个K线的收盘价高于前一个K线的收盘价</li>
+          <li>下降趋势：连续出现多个绿色K线，且每个K线的收盘价低于前一个K线的收盘价</li>
+          <li>横盘整理：K线在相对窄幅区间内波动，没有明显的上升或下降趋势</li>
+          <li>突破形态：价格突破前期高点或低点，可能预示着趋势的改变</li>
+        </ul>
+        <p>移动平均线的走势含义：</p>
+        <ul>
+          <li>均线多头排列：短期均线在长期均线上方，表示上升趋势</li>
+          <li>均线空头排列：短期均线在长期均线下方，表示下降趋势</li>
+          <li>均线粘合：多条均线相互靠近，表示市场处于盘整状态</li>
+          <li>均线发散：均线之间距离扩大，表示趋势正在加强</li>
+        </ul>
       </div>
     </div>
 
@@ -235,7 +301,21 @@
       <div class="chart-title">MACD图</div>
       <div ref="macdChartRef" style="width: 100%; height: 300px"></div>
       <div class="chart-description">
-        MACD指标用于判断价格的走势。DIF是短期和长期移动平均线的差，DEA是DIF的平均。
+        <h4>MACD走势分析</h4>
+        <p>MACD指标走势反映了市场趋势的强弱变化：</p>
+        <ul>
+          <li>DIF线上升：表示短期趋势向上，市场看涨情绪增强</li>
+          <li>DIF线下降：表示短期趋势向下，市场看跌情绪增强</li>
+          <li>DEA线上升：表示中期趋势向上，市场整体向好</li>
+          <li>DEA线下降：表示中期趋势向下，市场整体走弱</li>
+        </ul>
+        <p>MACD柱状图的走势含义：</p>
+        <ul>
+          <li>柱状图由负转正：空头力量减弱，多头力量增强，可能迎来上涨</li>
+          <li>柱状图由正转负：多头力量减弱，空头力量增强，可能迎来下跌</li>
+          <li>柱状图持续放大：当前趋势正在加强</li>
+          <li>柱状图持续缩小：当前趋势正在减弱</li>
+        </ul>
       </div>
     </div>
 
@@ -244,7 +324,34 @@
       <div class="chart-title">RSI图</div>
       <div ref="rsiChartRef" style="width: 100%; height: 300px"></div>
       <div class="chart-description">
-        RSI指标用于衡量价格的相对强弱。高于70表示超买，低于30表示超卖。
+        <h4>RSI走势分析</h4>
+        <p>RSI指标走势反映了市场买卖力量的对比：</p>
+        <ul>
+          <li>RSI持续上升：表示买方力量增强，市场处于强势</li>
+          <li>RSI持续下降：表示卖方力量增强，市场处于弱势</li>
+          <li>RSI在50以上波动：市场处于多头主导状态</li>
+          <li>RSI在50以下波动：市场处于空头主导状态</li>
+        </ul>
+        <p>RSI走势的特殊形态：</p>
+        <ul>
+          <li>RSI与价格形成顶背离：价格上涨但RSI下降，预示可能见顶回落</li>
+          <li>RSI与价格形成底背离：价格下跌但RSI上升，预示可能见底反弹</li>
+          <li>RSI突破下降趋势线：预示下跌趋势可能结束</li>
+          <li>RSI跌破上升趋势线：预示上涨趋势可能结束</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 添加变化原因弹窗 -->
+    <div v-if="showReasonModal" class="reason-modal">
+      <div class="reason-modal-content">
+        <div class="reason-modal-header">
+          <h3>变化原因详情</h3>
+          <span class="close" @click="closeReasonModal">&times;</span>
+        </div>
+        <div class="reason-modal-body">
+          {{ selectedReason }}
+        </div>
       </div>
     </div>
   </div>
@@ -315,6 +422,8 @@ export default {
       accuracy: "",
       r2: "",
     });
+    const showReasonModal = ref(false);
+    const selectedReason = ref('');
     
     // 更新关注状态
     const updateFollowStatus = debounce(async () => {
@@ -887,11 +996,11 @@ export default {
           forecastData.value = res.data.list;
           renderForecastChart(res.data.list);
         } else {
-          ElMessage.warning("获取业绩预告数据失败");
+          ElMessage.warning("获取业绩报告数据失败");
         }
       } catch (error) {
-        console.error("获取业绩预告数据失败:", error);
-        ElMessage.error("获取业绩预告数据失败");
+        console.error("获取业绩报告数据失败:", error);
+        ElMessage.error("获取业绩报告数据失败");
       }
     };
 
@@ -1176,6 +1285,16 @@ export default {
       }
     };
 
+    const showReason = (reason) => {
+      selectedReason.value = reason;
+      showReasonModal.value = true;
+    };
+
+    const closeReasonModal = () => {
+      showReasonModal.value = false;
+      selectedReason.value = '';
+    };
+
     watch(isModalOpen, async (newVal) => {
       if (newVal) {
         await nextTick(); // 确保 DOM 已经更新
@@ -1354,6 +1473,10 @@ export default {
       closeAIAnalysisModal,
       renderMarkdown,
       accuracyData,
+      showReasonModal,
+      selectedReason,
+      showReason,
+      closeReasonModal,
     };
   },
 };
@@ -1390,17 +1513,34 @@ export default {
   gap: 15px; /* 增加按钮之间的间距 */
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  color: black;
+.bg-white {
+  background-color: #1e88e5;
+  color: white;
+  border: none;
   border-radius: 4px;
+  padding: 0.5em 1.2em;
   cursor: pointer;
-  margin-right: 10px;
+  transition: background-color 0.3s;
+}
+
+.bg-white:hover {
+  background-color: #1976d2;
+}
+
+.bg-white:active {
+  background-color: #1565c0;
+}
+
+.bg-green-400 {
+  display: none;
+}
+
+.text-black {
+  color: white;
+}
+
+.translate-x-2 {
+  transform: none;
 }
 
 .company-info {
@@ -1447,14 +1587,33 @@ export default {
 }
 
 .chart-description {
-  margin-top: 15px; /* 增加间距 */
-  font-size: 15px; /* 增大字体 */
-  color: #555; /* 更柔和的颜色 */
+  margin-top: 15px;
+  font-size: 15px;
+  color: #555;
   background-color: #f9f9f9;
-  padding: 15px; /* 增加内边距 */
+  padding: 20px;
   border-radius: 8px;
   line-height: 1.6;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chart-description h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.chart-description p {
+  margin-bottom: 10px;
+}
+
+.chart-description ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.chart-description li {
+  margin-bottom: 5px;
 }
 
 /* 新增按钮样式 */
@@ -1565,46 +1724,21 @@ button:hover {
   display: inline-block;
   text-align: center;
   font-weight: bold;
-  padding: 0.3em 1em;
-  border: 3px solid #e2e9f0;
-  border-radius: 2px;
-  position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
-  color: #e2e9f0;
-  text-decoration: none;
-  transition: 0.3s ease all;
-  z-index: 1;
-  background-color: #78aac5;
+  padding: 0.5em 1.2em;
+  border: none;
+  border-radius: 4px;
+  background-color: #1e88e5;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.new-button:before {
-  transition: 0.5s all ease;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  right: 50%;
-  bottom: 0;
-  opacity: 0;
-  content: "";
-  background-color: #e2e9f0;
-  z-index: -1;
-}
-
-.new-button:hover,
-.new-button:focus {
-  color: black;
-}
-
-.new-button:hover:before,
-.new-button:focus:before {
-  transition: 0.5s all ease;
-  left: 0;
-  right: 0;
-  opacity: 1;
+.new-button:hover {
+  background-color: #1976d2;
 }
 
 .new-button:active {
-  transform: scale(0.9);
+  background-color: #1565c0;
 }
 
 .modal {
@@ -1620,12 +1754,14 @@ button:hover {
 
 .modal-content {
   background-color: #ffffff;
-  margin: 10% auto; /* 调整位置 */
-  padding: 30px; /* 增加内边距 */
+  margin: 5% auto;
+  padding: 30px;
   border: 1px solid #888;
-  width: 70%; /* 调整宽度 */
-  border-radius: 8px; /* 圆角 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 增加阴影 */
+  width: 90%;
+  max-width: 1400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .close {
@@ -1647,6 +1783,7 @@ button:hover {
   border-collapse: collapse;
   margin-top: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
 }
 
 .forecast-table th,
@@ -1654,12 +1791,55 @@ button:hover {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: center;
+  word-wrap: break-word;
 }
 
 .forecast-table th {
-  background-color: #4caf50;
-  color: white;
+  background-color: #ffffff; /* 改为白色背景 */
+  color: #333; /* 文字颜色改为深灰色 */
   font-weight: bold;
+  border-bottom: 2px solid #ddd; /* 添加底部边框以区分表头 */
+}
+
+/* 设置每列的宽度 */
+.forecast-table th:nth-child(1),
+.forecast-table td:nth-child(1) {
+  width: 10%;
+}
+
+.forecast-table th:nth-child(2),
+.forecast-table td:nth-child(2) {
+  width: 8%;
+}
+
+.forecast-table th:nth-child(3),
+.forecast-table td:nth-child(3) {
+  width: 8%;
+}
+
+.forecast-table th:nth-child(4),
+.forecast-table td:nth-child(4) {
+  width: 8%;
+}
+
+.forecast-table th:nth-child(5),
+.forecast-table td:nth-child(5) {
+  width: 12%;
+}
+
+.forecast-table th:nth-child(6),
+.forecast-table td:nth-child(6) {
+  width: 12%;
+}
+
+.forecast-table th:nth-child(7),
+.forecast-table td:nth-child(7) {
+  width: 12%;
+}
+
+.forecast-table th:nth-child(8),
+.forecast-table td:nth-child(8) {
+  width: 30%;
 }
 
 .forecast-table tr:nth-child(even) {
@@ -1670,11 +1850,77 @@ button:hover {
   background-color: #ddd;
 }
 
+/* 修改变化原因单元格的样式 */
+.forecast-table td[data-full-text] {
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* 限制最大宽度 */
+}
+
+.forecast-table td[data-full-text]:hover::before {
+  content: attr(data-full-text);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  white-space: normal;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
 .top10-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 10px; /* 减小表格与饼状图的间距 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
+}
+
+.top10-table th:nth-child(1), /* 公告日期 */
+.top10-table td:nth-child(1) {
+  width: 10%;
+}
+
+.top10-table th:nth-child(2), /* 股东名称 */
+.top10-table td:nth-child(2) {
+  width: 30%;
+}
+
+.top10-table th:nth-child(3), /* 持股数量 */
+.top10-table td:nth-child(3) {
+  width: 8%;
+}
+
+.top10-table th:nth-child(4), /* 持股比例 */
+.top10-table td:nth-child(4) {
+  width: 8%;
+}
+
+.top10-table th:nth-child(5), /* 流通股比例 */
+.top10-table td:nth-child(5) {
+  width: 9%;
+}
+
+.top10-table th:nth-child(6), /* 持股变动 */
+.top10-table td:nth-child(6) {
+  width: 8%;
+}
+
+.top10-table th:nth-child(7), /* 股东类型 */
+.top10-table td:nth-child(7) {
+  width: 28%;
 }
 
 .top10-table th,
@@ -1682,12 +1928,8 @@ button:hover {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: center;
-}
-
-.top10-table th {
-  background-color: #4caf50;
-  color: white;
-  font-weight: bold;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .top10-table tr:nth-child(even) {
@@ -1835,5 +2077,161 @@ button:hover {
   font-size: 20px;
   font-weight: bold;
   color: #333;
+}
+
+.pie-chart-container {
+  position: relative;
+  width: 100%;
+  margin-top: 40px; /* 增加上边距，为关闭按钮留出空间 */
+}
+
+.pie-chart-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  padding: 10px;
+  background-color: rgba(245, 245, 245, 0.9);
+  border-radius: 0 0 4px 4px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative; /* 改为相对定位 */
+  float: right; /* 使用浮动 */
+  margin: -10px 0; /* 调整位置 */
+}
+
+.close:hover,
+.close:focus {
+  color: #333;
+}
+
+/* 变化原因单元格样式 */
+.reason-cell {
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.reason-cell:hover {
+  background-color: #f0f0f0;
+}
+
+/* 变化原因弹窗样式 */
+.reason-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reason-modal-content {
+  background-color: #ffffff;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reason-modal-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reason-modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.reason-modal-body {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.reason-modal .close {
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative; /* 改为相对定位 */
+  float: right; /* 使用浮动 */
+  margin: -10px 0; /* 调整位置 */
+}
+
+.reason-modal .close:hover {
+  color: #333;
+}
+
+.modal-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.chart-section {
+  margin-bottom: 40px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-section-title {
+  color: #1e88e5;
+  margin-bottom: 15px;
+  font-size: 20px;
+  border-bottom: 2px solid #1e88e5;
+  padding-bottom: 10px;
+}
+
+.chart-description {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chart-description p {
+  margin: 10px 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.chart-description ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.chart-description li {
+  margin: 8px 0;
+  color: #555;
+  line-height: 1.5;
 }
 </style>

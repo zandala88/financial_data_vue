@@ -1,58 +1,178 @@
 <template>
-  <div class="container">
-    <div class="tabs">
-      <input type="radio" id="radio-1" name="tabs" v-model="currentTab" value="interestRates">
-      <label class="tab" for="radio-1">利率数据</label>
-      
-      <input type="radio" id="radio-2" name="tabs" v-model="currentTab" value="nationalEconomy">
-      <label class="tab" for="radio-2">国民经济</label>
-      
-      <input type="radio" id="radio-3" name="tabs" v-model="currentTab" value="priceIndex">
-      <label class="tab" for="radio-3">价格指数</label>
-      
-      <span class="glider"></span>
+  <div class="economics">
+    <div class="filter-container">
+      <el-radio-group v-model="currentTab" class="tabs">
+        <el-radio-button label="interestRates">利率数据</el-radio-button>
+        <el-radio-button label="nationalEconomy">国民经济</el-radio-button>
+        <el-radio-button label="priceIndex">价格指数</el-radio-button>
+      </el-radio-group>
     </div>
 
     <!-- 选项卡内容 -->
-    <div class="tab-content" v-if="currentTab === 'interestRates'">
-      <div ref="chart" class="chart"></div>
-      <div class="description">
-        <p>上海银行间同业拆放利率（Shanghai Interbank Offered Rate，简称Shibor），以位于上海的全国银行间同业拆借中心为技术平台计算、发布并命名，是由信用等级较高的银行组成报价团自主报出的人民币同业拆出利率计算确定的算术平均利率，是单利、无担保、批发性利率。目前，对社会公布的Shibor品种包括隔夜、1周、2周、1个月、3个月、6个月、9个月及1年。</p>
-        <p>Shibor报价银行团现由18家商业银行组成。报价银行是公开市场一级交易商或外汇市场做市商，在中国货币市场上人民币交易相对活跃、信息披露比较充分的银行。中国人民银行成立Shibor工作小组，依据《上海银行间同业拆放利率（Shibor）实施准则》确定和调整报价银行团成员、监督和管理Shibor运行、规范报价行与指定发布人行为。</p>
-      </div>
-    </div>
-    <div v-if="currentTab === 'nationalEconomy'">
-      <div class="selector">
-        <div class="select-wrapper">
-          <select v-model="selectedYear" class="styled-select">
-            <option value="" disabled>选择年份</option>
-            <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
-          </select>
-          <span class="select-arrow"></span>
+    <div class="content-container">
+      <div v-if="currentTab === 'interestRates'" class="tab-content">
+        <div class="section-header">
+          <span class="title">SHIBOR 利率数据</span>
         </div>
-        <div class="select-wrapper">
-          <select v-model="selectedQuarter" class="styled-select">
-            <option value="" disabled>选择季度</option>
-            <option v-for="quarter in quarters" :key="quarter" :value="quarter">第{{ quarter }}季度</option>
-          </select>
-          <span class="select-arrow"></span>
+        <div ref="chart" class="chart"></div>
+        <div class="description">
+          <p>上海银行间同业拆放利率（Shanghai Interbank Offered Rate，简称Shibor），以位于上海的全国银行间同业拆借中心为技术平台计算、发布并命名，是由信用等级较高的银行组成报价团自主报出的人民币同业拆出利率计算确定的算术平均利率，是单利、无担保、批发性利率。目前，对社会公布的Shibor品种包括隔夜、1周、2周、1个月、3个月、6个月、9个月及1年。</p>
+          <p>Shibor报价银行团现由18家商业银行组成。报价银行是公开市场一级交易商或外汇市场做市商，在中国货币市场上人民币交易相对活跃、信息披露比较充分的银行。中国人民银行成立Shibor工作小组，依据《上海银行间同业拆放利率（Shibor）实施准则》确定和调整报价银行团成员、监督和管理Shibor运行、规范报价行与指定发布人行为。</p>
         </div>
-        <button @click="fetchGdpData" class="styled-button">
-          <span>获取数据</span>
-        </button>
-      </div>
-      <div class="gdp-display">
-        <div class="gdp-card">
-          <h2>国内生产总值(GDP)</h2>
-          <div class="gdp-value">{{ gdpData.gdp }} 亿元</div>
+        <div class="rate-trends-card">
+          <h3>利率波动含义</h3>
+          <div class="trends-content">
+            <div class="trend-item">
+              <h4>上升趋势</h4>
+              <ul>
+                <li>可能表示通货膨胀压力增大</li>
+                <li>可能表示经济活动增强</li>
+                <li>可能表示市场流动性紧张</li>
+              </ul>
+            </div>
+            <div class="trend-item">
+              <h4>下降趋势</h4>
+              <ul>
+                <li>可能表示通货紧缩风险</li>
+                <li>可能表示经济活动减弱</li>
+                <li>可能表示市场流动性宽松</li>
+              </ul>
+            </div>
+            <div class="trend-item">
+              <h4>期限利差</h4>
+              <ul>
+                <li>长期利率与短期利率之间的差异</li>
+                <li>反映市场对未来经济预期的变化</li>
+                <li>影响长期投资和短期投资决策</li>
+              </ul>
+            </div>
+            <div class="trend-item">
+              <h4>波动性</h4>
+              <ul>
+                <li>利率水平的随机变化</li>
+                <li>反映市场不确定性和风险</li>
+                <li>影响投资和消费决策</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-      <div ref="gdpChart" class="chart"></div>
-    </div>
-    <div v-if="currentTab === 'priceIndex'">
-      <div ref="cpiChart" class="chart"></div>
-      <div ref="cpiChart2" class="chart"></div>
-      <div ref="cpiChart3" class="chart"></div>
+
+      <div v-if="currentTab === 'nationalEconomy'" class="tab-content">
+        <div class="section-header">
+          <span class="title">国民经济数据</span>
+        </div>
+        <div class="economy-container">
+          <div class="economy-left">
+            <div class="selector">
+              <div class="select-wrapper">
+                <select v-model="selectedYear" class="styled-select">
+                  <option value="" disabled>选择年份</option>
+                  <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
+                </select>
+                <span class="select-arrow"></span>
+              </div>
+              <div class="select-wrapper">
+                <select v-model="selectedQuarter" class="styled-select">
+                  <option value="" disabled>选择季度</option>
+                  <option v-for="quarter in quarters" :key="quarter" :value="quarter">第{{ quarter }}季度</option>
+                </select>
+                <span class="select-arrow"></span>
+              </div>
+              <button @click="fetchGdpData" class="styled-button">
+                <span>获取数据</span>
+              </button>
+            </div>
+            <div class="gdp-display">
+              <div class="gdp-card">
+                <h2>国内生产总值(GDP)</h2>
+                <div class="gdp-value">{{ gdpData.gdp }} 亿元</div>
+              </div>
+            </div>
+            <div ref="gdpChart" class="chart"></div>
+          </div>
+          <div class="economy-right">
+            <div class="description-card">
+              <h3>国民经济构成说明</h3>
+              <div class="description-content">
+                <div class="description-item">
+                  <h4>第一产业</h4>
+                  <p>• 包括农业、林业、畜牧业、渔业等</p>
+                  <p>• 占比高：反映农业经济主导地位</p>
+                  <p>• 占比低：反映工业化程度高</p>
+                  <p>• 我国第一产业占比通常在7-10%之间</p>
+                </div>
+                <div class="description-item">
+                  <h4>第二产业</h4>
+                  <p>• 包括工业、建筑业等</p>
+                  <p>• 占比高：反映工业化程度高</p>
+                  <p>• 占比低：反映服务业发达</p>
+                  <p>• 我国第二产业占比通常在35-45%之间</p>
+                </div>
+                <div class="description-item">
+                  <h4>第三产业</h4>
+                  <p>• 包括服务业、金融业、信息产业等</p>
+                  <p>• 占比高：反映经济结构现代化</p>
+                  <p>• 占比低：反映工业化程度不足</p>
+                  <p>• 我国第三产业占比通常在45-55%之间</p>
+                </div>
+                <div class="description-item">
+                  <h4>产业结构变化</h4>
+                  <p>• 第一产业占比下降：反映农业现代化</p>
+                  <p>• 第二产业占比下降：反映产业升级</p>
+                  <p>• 第三产业占比上升：反映经济转型</p>
+                  <p>• 发达国家第三产业占比通常超过60%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="currentTab === 'priceIndex'" class="tab-content">
+        <div class="section-header">
+          <span class="title">价格指数数据</span>
+        </div>
+        <div class="cpi-charts-container">
+          <div class="chart-wrapper">
+            <div ref="cpiChart" class="chart"></div>
+          </div>
+          <div class="chart-wrapper">
+            <div ref="cpiChart2" class="chart"></div>
+          </div>
+        </div>
+        <div class="cpi-description">
+          <div class="description-card">
+            <h3>数据解读指南</h3>
+            <div class="description-content">
+              <div class="description-item">
+                <h4>同比数据</h4>
+                <p>• 与上年同月相比的变化率</p>
+                <p>• 反映物价的长期变化趋势</p>
+                <p>• 消除季节性因素影响</p>
+              </div>
+              <div class="description-item">
+                <h4>环比数据</h4>
+                <p>• 与上月相比的变化率</p>
+                <p>• 反映物价的短期波动情况</p>
+                <p>• 显示最新价格变化趋势</p>
+              </div>
+              <div class="description-item">
+                <h4>城乡差异</h4>
+                <p>• 城镇CPI：反映城市居民消费价格水平</p>
+                <p>• 农村CPI：反映农村居民消费价格水平</p>
+                <p>• 差异反映城乡经济发展和消费结构差异</p>
+              </div>
+              <div class="description-item">
+                <h4>数据意义</h4>
+                <p>• 上升趋势：可能表示通货膨胀压力增大</p>
+                <p>• 下降趋势：可能表示通货紧缩风险</p>
+                <p>• 影响货币政策、居民生活水平和投资决策</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -289,7 +409,6 @@ export default {
           this.cpiData = res.data.list;
           this.initCpiChart();
           this.initCpiChart2();
-          this.initCpiChart3();
         }
       } catch (error) {
         console.error('获取价格指数数据失败:', error);
@@ -389,53 +508,6 @@ export default {
       };
 
       chart.setOption(option);
-    },
-    initCpiChart3() {
-      const chart = echarts.init(this.$refs.cpiChart3);
-      const months = this.cpiData.map(item => item.month);
-      const ntAccu = this.cpiData.map(item => item.ntAccu);
-      const townAccu = this.cpiData.map(item => item.townAccu);
-      const cntAccu = this.cpiData.map(item => item.cntAccu);
-
-      const option = {
-        title: {
-          text: '居民消费价格指数累计值',
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['全国', '城镇', '农村'],
-          top: '10%'
-        },
-        xAxis: {
-          type: 'category',
-          data: months
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: '全国',
-            type: 'line',
-            data: ntAccu
-          },
-          {
-            name: '城镇',
-            type: 'line',
-            data: townAccu
-          },
-          {
-            name: '农村',
-            type: 'line',
-            data: cntAccu
-          }
-        ]
-      };
-
-      chart.setOption(option);
     }
   },
   mounted() {
@@ -462,199 +534,155 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.economics {
+  padding: 30px;
+  background-color: #f9f9f9;
+  min-height: 100%;
+}
+
+.filter-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-  padding: 2rem;
-  border-radius: 12px;
+  justify-content: center;
+}
+
+.content-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tabs {
   display: flex;
-  position: relative;
+  justify-content: center;
+}
+
+:deep(.el-radio-button__inner) {
+  padding: 8px 24px;
+  font-size: 14px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  margin: 0 4px;
+}
+
+:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
   background-color: #fff;
-  box-shadow: 0 0 1px 0 rgba(24, 94, 224, 0.15), 0 6px 12px 0 rgba(24, 94, 224, 0.15);
-  padding: 0.75rem;
-  border-radius: 99px;
-  width: auto;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
+  color: #409EFF;
+  border-color: transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.tabs * {
-  z-index: 2;
+:deep(.el-radio-button:first-child .el-radio-button__inner) {
+  border-radius: 6px;
 }
 
-.container input[type="radio"] {
-  display: none;
+:deep(.el-radio-button:last-child .el-radio-button__inner) {
+  border-radius: 6px;
 }
 
-.tab {
+:deep(.el-radio-button__inner:hover) {
+  color: #409EFF;
+}
+
+.section-header {
+  padding: 16px;
+  border-bottom: 1px solid #ebeef5;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  height: 30px;
-  width: 80px;
-  font-size: .8rem;
-  color: black;
-  font-weight: 500;
-  border-radius: 99px;
-  cursor: pointer;
-  transition: color 0.15s ease-in, background-color 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
-.tab:hover {
-  background-color: #e6eef9;
-}
-
-.notification {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: .8rem;
-  height: .8rem;
-  position: absolute;
-  top: 10px;
-  left: 30%;
-  font-size: 10px;
-  margin-left: 0.75rem;
-  border-radius: 50%;
-  margin: 0px;
-  background-color: #e6eef9;
-  transition: 0.15s ease-in;
-}
-
-.container input[type="radio"]:checked + label {
-  color: #185ee0;
-}
-
-.container input[type="radio"]:checked + label > .notification {
-  background-color: #185ee0;
-  color: #fff;
-  margin: 0px;
-}
-
-.container input[id="radio-1"]:checked ~ .glider {
-  transform: translateX(0);
-}
-
-.container input[id="radio-2"]:checked ~ .glider {
-  transform: translateX(100%);
-}
-
-.container input[id="radio-3"]:checked ~ .glider {
-  transform: translateX(200%);
-}
-
-.glider {
-  position: absolute;
-  display: flex;
-  height: 30px;
-  width: 80px;
-  background-color: #e6eef9;
-  z-index: 1;
-  border-radius: 99px;
-  transition: 0.25s ease-out;
-}
-
-.tab-content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
+.section-header .title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  user-select: none;
 }
 
 .chart {
-  width: 1000px;
+  width: 100%;
   height: 500px;
-  margin: 0 auto;
+  margin: 20px 0;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card {
-  position: relative;
-  width: 200px;
-  height: 250px;
-  border-radius: 14px;
-  z-index: 1111;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
-}
-
-.bg {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 190px;
-  height: 240px;
-  z-index: 2;
-  background: rgba(255, 255, 255, .95);
-  backdrop-filter: blur(24px);
-  border-radius: 10px;
-  overflow: hidden;
-  outline: 2px solid white;
-}
-
-.blob {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 50%;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background-color: #ff0000;
-  opacity: 1;
-  filter: blur(12px);
-  animation: blob-bounce 5s infinite ease;
-}
-
-@keyframes blob-bounce {
-  0% {
-    transform: translate(-100%, -100%) translate3d(0, 0, 0);
-  }
-  25% {
-    transform: translate(-100%, -100%) translate3d(100%, 0, 0);
-  }
-  50% {
-    transform: translate(-100%, -100%) translate3d(100%, 100%, 0);
-  }
-  75% {
-    transform: translate(-100%, -100%) translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate(-100%, -100%) translate3d(0, 0, 0);
-  }
 }
 
 .description {
   margin-top: 20px;
   padding: 20px;
   text-align: left;
-  max-width: 800px;
   font-size: 16px;
   line-height: 1.6;
   color: #333;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-left: auto;
-  margin-right: auto;
 }
 
-@media (max-width: 700px) {
-  .tabs {
-    transform: scale(0.6);
-  }
+.rate-trends-card {
+  margin-top: 30px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rate-trends-card h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.trends-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.trend-item {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.trend-item h4 {
+  color: #185ee0;
+  font-size: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8eaed;
+}
+
+.trend-item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trend-item li {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.trend-item li::before {
+  content: "•";
+  color: #185ee0;
+  position: absolute;
+  left: 0;
 }
 
 .selector {
@@ -733,29 +761,6 @@ export default {
   transform: translateY(0);
 }
 
-@media (max-width: 600px) {
-  .selector {
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-  
-  .select-wrapper {
-    width: 100%;
-    max-width: 300px;
-  }
-  
-  .styled-button {
-    width: 100%;
-    max-width: 300px;
-    justify-content: center;
-  }
-  
-  .chart {
-    width: 100%;
-    height: auto;
-  }
-}
-
 .gdp-display {
   margin-top: 2rem;
   display: flex;
@@ -778,18 +783,204 @@ export default {
   margin: 1rem 0;
 }
 
-.gdp-details {
-  margin-top: 1.5rem;
+@media (max-width: 600px) {
+  .selector {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .select-wrapper {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .styled-button {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+  
+  .chart {
+    height: 300px;
+  }
 }
 
-.gdp-item {
+.cpi-charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.chart-wrapper {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.chart {
+  width: 100%;
+  height: 400px;
+  margin: 0;
+}
+
+.cpi-description {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.description-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.description-card h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.description-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.description-item {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.description-item h4 {
+  color: #185ee0;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.description-item p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+@media (max-width: 1200px) {
+  .cpi-charts-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart {
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart {
+    height: 300px;
+  }
+  
+  .gdp-value {
+    font-size: 2rem;
+  }
+  
+  .economy-right .description-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.economy-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  min-height: calc(100vh - 250px);
+}
+
+.economy-left {
   display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
 }
 
-.gdp-item:last-child {
-  border-bottom: none;
+.economy-right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.economy-right .description-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.economy-right .description-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 15px 0;
+}
+
+.economy-right .description-item {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  height: fit-content;
+}
+
+.gdp-display {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.chart {
+  flex: 1;
+  width: 100%;
+  min-height: 400px;
+  margin: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 1200px) {
+  .economy-container {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  
+  .economy-right .description-content {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .chart {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart {
+    min-height: 300px;
+  }
+  
+  .gdp-value {
+    font-size: 2rem;
+  }
+  
+  .economy-right .description-content {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

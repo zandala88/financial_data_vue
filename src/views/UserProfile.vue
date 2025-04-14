@@ -12,6 +12,7 @@
         <div class="user-info">
           <div class="user-details">
             <p><strong>用户名：</strong>{{ userInfo.username }} <strong>邮箱：</strong>{{ userInfo.email }}</p>
+            <p class="user-tip">点击右上角"退出登录"按钮可以安全退出系统</p>
           </div>
         </div>
         <button @click="logout" class="logout-button">退出登录</button>
@@ -19,6 +20,8 @@
       <div class="content">
         <div class="watchlist stocks">
           <h2>股票关注列表</h2>
+          <p class="list-tip">点击任意股票可查看详细信息，鼠标悬停可查看预测值</p>
+          <p class="color-tip">红色表示预测上涨，绿色表示预测下跌，白色表示数据不足无法预测</p>
           <ul>
             <li v-for="stock in userInfo.stockList" :key="stock.id"
                 @click="goToDetail('stock', stock.id)"
@@ -34,6 +37,8 @@
         </div>
         <div class="watchlist funds">
           <h2>基金关注列表</h2>
+          <p class="list-tip">点击任意基金可查看详细信息，鼠标悬停可查看预测值</p>
+          <p class="color-tip">红色表示预测上涨，绿色表示预测下跌，白色表示数据不足无法预测</p>
           <ul>
             <li v-for="fund in userInfo.fundList" :key="fund.id"
                 @click="goToDetail('fund', fund.id)"
@@ -260,5 +265,31 @@ li:hover {
   100% {
     height: 15px;
   }
+}
+
+.user-tip {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.list-tip {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.color-tip {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 15px;
+  font-style: italic;
+  background-color: #f8f9fa;
+  padding: 8px;
+  border-radius: 4px;
 }
 </style>

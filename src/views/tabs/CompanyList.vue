@@ -5,9 +5,9 @@
       <div class="section-header">
         <span class="title">选择省份</span>
         <div class="actions">
-          <el-button type="primary" link @click="selectAll">全选</el-button>
+          <el-button type="default" link @click="selectAll">全选</el-button>
           <el-divider direction="vertical" />
-          <el-button type="primary" link @click="clearAll">清空</el-button>
+          <el-button type="default" link @click="clearAll">清空</el-button>
         </div>
       </div>
       <div class="province-container">
@@ -63,29 +63,24 @@
       >
         <el-table-column prop="comName" label="公司名称" min-width="200" show-overflow-tooltip />
         <el-table-column prop="comId" label="统一社会信用代码" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="chairman" label="法人代表" min-width="120" />
-        <el-table-column prop="manager" label="总经理" min-width="120" />
-        <el-table-column prop="secretary" label="董秘" min-width="120" />
+        <el-table-column prop="chairman" label="法人代表" width="100" />
+        <el-table-column prop="manager" label="总经理" width="100" />
+        <el-table-column prop="secretary" label="董秘" width="100" />
         <el-table-column prop="regCapital" label="注册资本" min-width="120">
           <template #default="{ row }">
             {{ row.regCapital.toFixed(2) }}
           </template>
         </el-table-column>
-        <el-table-column prop="province" label="所在省份" min-width="120" />
-        <el-table-column prop="city" label="所在城市" min-width="120" />
-        <el-table-column prop="employees" label="员工人数" min-width="120" />
+        <el-table-column prop="province" label="所在省份" min-width="90" />
+        <el-table-column prop="city" label="所在城市" min-width="90" />
+        <el-table-column prop="employees" label="员工人数" min-width="90" />
         
         <!-- 添加操作列 -->
         <el-table-column label="操作">
           <template #default="scope">
-            <button class="c-button c-button--gooey" @click="handleViewDetail(scope.row)">
+            <el-button type="primary" size="small" @click="handleViewDetail(scope.row)">
               查看详情
-              <div class="c-button__blobs">
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </button>
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -616,10 +611,28 @@ export default {
   flex-shrink: 0;
   padding: 4px;
   margin-top: 2px;
+  background: transparent !important;
+  border: none !important;
+}
+
+.copy-btn :deep(.el-button) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.copy-btn :deep(.el-button:hover) {
+  background: transparent !important;
+  border: none !important;
 }
 
 .copy-btn :deep(.el-icon) {
   font-size: 16px;
+  color: #409eff;
+}
+
+.copy-btn:hover :deep(.el-icon) {
+  color: #66b1ff;
 }
 
 .company-detail strong {
@@ -869,72 +882,22 @@ input:not(:placeholder-shown) ~ .reset {
   margin-top: 3px;
 }
 
-.c-button {
-  color: #000;
-  font-weight: 700;
-  font-size: 11px;
-  text-decoration: none;
-  padding: 0.9em 1.6em;
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
-  z-index: 1;
-}
-
-.c-button--gooey {
-  color: #06c8d9;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  border: 4px solid #06c8d9;
-  border-radius: 0;
-  position: relative;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.c-button--gooey .c-button__blobs {
-  height: 100%;
-  filter: url(#goo);
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: -3px;
-  right: -1px;
-  z-index: -1;
-}
-
+/* 移除旧的按钮样式 */
+.c-button,
+.c-button--gooey,
+.c-button__blobs,
 .c-button--gooey .c-button__blobs div {
-  background-color: #06c8d9;
-  width: 34%;
-  height: 100%;
-  border-radius: 100%;
-  position: absolute;
-  transform: scale(1.4) translateY(125%) translateZ(0);
-  transition: all 700ms ease;
+  display: none;
 }
 
-.c-button--gooey .c-button__blobs div:nth-child(1) {
-  left: -5%;
+/* 添加新的按钮样式 */
+:deep(.el-button--primary) {
+  background-color: #409eff;
+  border-color: #409eff;
 }
 
-.c-button--gooey .c-button__blobs div:nth-child(2) {
-  left: 30%;
-  transition-delay: 60ms;
-}
-
-.c-button--gooey .c-button__blobs div:nth-child(3) {
-  left: 66%;
-  transition-delay: 25ms;
-}
-
-.c-button--gooey:hover {
-  color: #fff;
-  background-color: #06c8d9;
-}
-
-.c-button--gooey:hover .c-button__blobs div {
-  transform: scale(1.4) translateY(0) translateZ(0);
+:deep(.el-button--primary:hover) {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
 }
 </style> 

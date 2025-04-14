@@ -3,17 +3,6 @@
     <!-- 顶部导航 -->
     <div class="nav-header">
       <button @click="handleBack">
-        <svg
-          height="16"
-          width="16"
-          xmlns="http://www.w3.org/2000/svg"
-          version="1.1"
-          viewBox="0 0 1024 1024"
-        >
-          <path
-            d="M874.690416 495.52477c0 11.2973-9.168824 20.466124-20.466124 20.466124l-604.773963 0 188.083679 188.083679c7.992021 7.992021 7.992021 20.947078 0 28.939099-4.001127 3.990894-9.240455 5.996574-14.46955 5.996574-5.239328 0-10.478655-1.995447-14.479783-5.996574l-223.00912-223.00912c-3.837398-3.837398-5.996574-9.046027-5.996574-14.46955 0-5.433756 2.159176-10.632151 5.996574-14.46955l223.019353-223.029586c7.992021-7.992021 20.957311-7.992021 28.949332 0 7.992021 8.002254 7.992021 20.957311 0 28.949332l-188.073446 188.073446 604.753497 0C865.521592 475.058646 874.690416 484.217237 874.690416 495.52477z"
-          ></path>
-        </svg>
         <span>Back</span>
       </button>
       <!-- 书签复选框 -->
@@ -67,7 +56,21 @@
       <div class="chart-title">K线图</div>
       <div ref="chartRef" style="width: 100%; height: 400px"></div>
       <div class="chart-description">
-        K线图显示基金价格的变动。红色表示收盘价高于开盘价（上涨），绿色表示收盘价低于开盘价（下跌）。
+        <h4>K线图走势分析</h4>
+        <p>K线图走势反映了基金价格的变动趋势：</p>
+        <ul>
+          <li>上升趋势：连续出现多个红色K线，且每个K线的收盘价高于前一个K线的收盘价</li>
+          <li>下降趋势：连续出现多个绿色K线，且每个K线的收盘价低于前一个K线的收盘价</li>
+          <li>横盘整理：K线在相对窄幅区间内波动，没有明显的上升或下降趋势</li>
+          <li>突破形态：价格突破前期高点或低点，可能预示着趋势的改变</li>
+        </ul>
+        <p>移动平均线的走势含义：</p>
+        <ul>
+          <li>均线多头排列：短期均线在长期均线上方，表示上升趋势</li>
+          <li>均线空头排列：短期均线在长期均线下方，表示下降趋势</li>
+          <li>均线粘合：多条均线相互靠近，表示市场处于盘整状态</li>
+          <li>均线发散：均线之间距离扩大，表示趋势正在加强</li>
+        </ul>
       </div>
     </div>
 
@@ -76,7 +79,21 @@
       <div class="chart-title">MACD图</div>
       <div ref="macdChartRef" style="width: 100%; height: 300px"></div>
       <div class="chart-description">
-        MACD指标用于判断价格的走势。DIF是短期和长期移动平均线的差，DEA是DIF的平均。
+        <h4>MACD走势分析</h4>
+        <p>MACD指标走势反映了市场趋势的强弱变化：</p>
+        <ul>
+          <li>DIF线上升：表示短期趋势向上，市场看涨情绪增强</li>
+          <li>DIF线下降：表示短期趋势向下，市场看跌情绪增强</li>
+          <li>DEA线上升：表示中期趋势向上，市场整体向好</li>
+          <li>DEA线下降：表示中期趋势向下，市场整体走弱</li>
+        </ul>
+        <p>MACD柱状图的走势含义：</p>
+        <ul>
+          <li>柱状图由负转正：空头力量减弱，多头力量增强，可能迎来上涨</li>
+          <li>柱状图由正转负：多头力量减弱，空头力量增强，可能迎来下跌</li>
+          <li>柱状图持续放大：当前趋势正在加强</li>
+          <li>柱状图持续缩小：当前趋势正在减弱</li>
+        </ul>
       </div>
     </div>
 
@@ -85,7 +102,21 @@
       <div class="chart-title">RSI图</div>
       <div ref="rsiChartRef" style="width: 100%; height: 300px"></div>
       <div class="chart-description">
-        RSI指标用于衡量价格的相对强弱。高于70表示超买，低于30表示超卖。
+        <h4>RSI走势分析</h4>
+        <p>RSI指标走势反映了市场买卖力量的对比：</p>
+        <ul>
+          <li>RSI持续上升：表示买方力量增强，市场处于强势</li>
+          <li>RSI持续下降：表示卖方力量增强，市场处于弱势</li>
+          <li>RSI在50以上波动：市场处于多头主导状态</li>
+          <li>RSI在50以下波动：市场处于空头主导状态</li>
+        </ul>
+        <p>RSI走势的特殊形态：</p>
+        <ul>
+          <li>RSI与价格形成顶背离：价格上涨但RSI下降，预示可能见顶回落</li>
+          <li>RSI与价格形成底背离：价格下跌但RSI上升，预示可能见底反弹</li>
+          <li>RSI突破下降趋势线：预示下跌趋势可能结束</li>
+          <li>RSI跌破上升趋势线：预示上涨趋势可能结束</li>
+        </ul>
       </div>
     </div>
 
@@ -740,10 +771,10 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  padding: 10px; /* 增加内边距 */
-  background-color: #ffffff; /* 增加背景色 */
-  border-radius: 8px; /* 增加圆角 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 增加阴影 */
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -758,30 +789,49 @@ export default {
   flex: 1;
   min-height: 300px;
   border: 1px solid #ebeef5;
-  border-radius: 8px; /* 增加圆角 */
+  border-radius: 8px;
   margin-bottom: 20px;
-  padding: 15px; /* 增加内边距 */
+  padding: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff; /* 增加背景色 */
+  background-color: #ffffff;
 }
 
 .chart-title {
   text-align: center;
   font-weight: bold;
-  margin: 10px 0;
-  font-size: 20px; /* 增加字体大小 */
+  margin: 15px 0;
+  font-size: 20px;
   color: #333;
 }
 
 .chart-description {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #444;
+  margin-top: 15px;
+  font-size: 15px;
+  color: #555;
   background-color: #f9f9f9;
-  padding: 10px;
-  border-radius: 4px;
+  padding: 20px;
+  border-radius: 8px;
   line-height: 1.6;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chart-description h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.chart-description p {
+  margin-bottom: 10px;
+}
+
+.chart-description ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.chart-description li {
+  margin-bottom: 5px;
 }
 
 .nav-header button {
@@ -790,29 +840,52 @@ export default {
   width: 100px;
   align-items: center;
   justify-content: center;
-  background-color: #e2e9f0;
-  border-radius: 3px;
-  letter-spacing: 1px;
-  transition: all 0.2s linear;
-  cursor: pointer;
+  background-color: #1e88e5;
+  color: white;
   border: none;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 25px; /* 增加与收藏按钮的距离 */
+}
+
+.nav-header button:hover {
+  background-color: #1976d2;
+}
+
+.nav-header button:active {
+  background-color: #1565c0;
 }
 
 .nav-header button > svg {
   margin-right: 5px;
   margin-left: 5px;
   font-size: 20px;
-  transition: all 0.4s ease-in;
 }
 
-.nav-header button:hover > svg {
-  font-size: 1.2em;
-  transform: translateX(-5px);
+.new-button {
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+  padding: 0.5em 1.2em;
+  border: none;
+  border-radius: 4px;
+  background-color: #1e88e5;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.nav-header button:hover {
-  box-shadow: 9px 9px 33px #d1d1d1, -9px -9px 33px #ffffff;
-  transform: translateY(-2px);
+.new-button:hover {
+  background-color: #1976d2;
+}
+
+.new-button:active {
+  background-color: #1565c0;
 }
 
 .bookmark-checkbox {

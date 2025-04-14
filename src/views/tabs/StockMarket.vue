@@ -67,7 +67,7 @@
 
       <!-- 删除所选按钮移到右侧 -->
       <div class="actions">
-        <el-button type="primary" link @click="clearAllSelected">
+        <el-button type="primary" size="small" @click="clearAllSelected">
           删除所选
         </el-button>
       </div>
@@ -141,42 +141,42 @@
         border
         style="width: 100%"
       >
-        <el-table-column prop="name" label="股票名称" min-width="100" />
+        <el-table-column prop="name" label="股票名称" min-width="90" />
         <el-table-column prop="area" label="地区" min-width="80" />
         <el-table-column prop="industry" label="行业" min-width="100" />
         <el-table-column prop="market" label="市场" min-width="80" />
         <el-table-column
           prop="actName"
           label="实控人"
-          min-width="150"
+          min-width="100"
           show-overflow-tooltip
         />
         <el-table-column prop="actEntType" label="实控人类型" min-width="100" />
         <el-table-column
           prop="fullName"
           label="公司全称"
-          min-width="200"
+          min-width="160"
           show-overflow-tooltip
         />
         <el-table-column
           prop="enName"
           label="英文名称"
-          min-width="200"
+          min-width="100"
           show-overflow-tooltip
         />
-        <el-table-column prop="cnSpell" label="拼音简称" min-width="100" />
-        <el-table-column prop="exchange" label="交易所" min-width="100">
+        <el-table-column prop="cnSpell" label="拼音简称" min-width="90" />
+        <el-table-column prop="exchange" label="交易所" min-width="80">
           <template #default="{ row }">
             {{ getExchangeName(row.exchange) }}
           </template>
         </el-table-column>
         <el-table-column prop="currType" label="币种" min-width="80" />
-        <el-table-column prop="listStatus" label="上市状态" min-width="100">
+        <el-table-column prop="listStatus" label="上市状态" min-width="90">
           <template #default="{ row }">
             {{ row.listStatus === "L" ? "上市" : "退市" }}
           </template>
         </el-table-column>
-        <el-table-column prop="isHs" label="股票类型" min-width="100">
+        <el-table-column prop="isHs" label="股票类型" min-width="90">
           <template #default="{ row }">
             {{ getHsTypeName(row.isHs) }}
           </template>
@@ -184,17 +184,9 @@
 
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <button
-              class="c-button c-button--gooey"
-              @click="handleViewDetail(row)"
-            >
+            <el-button type="primary" size="small" @click="handleViewDetail(row)">
               查看详情
-              <div class="c-button__blobs">
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </button>
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -482,17 +474,42 @@ export default {
   color: #409eff;
 }
 
-:deep(.el-button--link) {
-  padding: 0;
-  height: auto;
-}
-
 .actions {
   padding-left: 30px;
   border-left: 1px solid #ebeef5;
   display: flex;
   align-items: center;
   margin-top: 0;
+}
+
+/* 移除旧的按钮样式 */
+:deep(.el-button--link) {
+  display: none;
+}
+
+/* 添加新的按钮样式 */
+:deep(.el-button--primary) {
+  background-color: #409eff;
+  border-color: #409eff;
+  color: #fff;
+}
+
+:deep(.el-button--primary:hover) {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+  color: #fff;
+}
+
+:deep(.el-button--primary:active) {
+  background-color: #3a8ee6;
+  border-color: #3a8ee6;
+  color: #fff;
+}
+
+:deep(.el-button--small) {
+  padding: 5px 11px;
+  font-size: 12px;
+  border-radius: 3px;
 }
 
 .search-container {
@@ -527,10 +544,6 @@ export default {
   border-radius: 4px;
 }
 
-:deep(.el-button) {
-  min-width: 80px; /* 确保按钮有固定最小宽度 */
-}
-
 .table-container {
   margin-top: 20px;
   background: #fff;
@@ -551,7 +564,8 @@ export default {
 }
 
 :deep(.el-table th) {
-  font-weight: 600;
+  font-weight: 500;
+  color: #000;
 }
 
 .check_container {
