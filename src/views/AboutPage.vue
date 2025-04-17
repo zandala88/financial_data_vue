@@ -5,18 +5,42 @@
       <h1>关于我们</h1>
     </header>
     <section class="content">
-      <p>欢迎来到金融数据可视化系统。我们致力于提供最优质的金融数据分析服务。</p>
-      <!-- 新增内容开始 -->
       <h2>关于我</h2>
       <p>欢迎来到金融数据可视化平台！</p>
-      <p>我是这个平台的唯一开发者，一个热爱数据与金融世界的独立创作者。在这个项目中，我专注于将复杂的金融数据通过直观、易于理解的图表和动态分析呈现出来，帮助用户快速捕捉市场趋势与信息。</p>
+      <p>我是这个平台的唯一开发者，一名热爱金融与数据分析的独立创作者。这个项目完全由我自主构思、设计与实现，旨在通过技术手段让复杂的金融数据变得直观易懂。</p>
+
       <h2>我的初衷</h2>
       <ul>
-        <li><strong>独立开发者：</strong>没有团队支持，这一切都是我独自构思、设计与实现的结果。</li>
-        <li><strong>热情与专注：</strong>凭借对金融市场的热情和对数据分析的专业追求，我不断优化平台的功能和体验。</li>
-        <li><strong>用户至上：</strong>致力于打造简洁高效的数据可视化工具，让用户能以最直观的方式理解金融数据的背后故事。</li>
+        <li><strong>独立开发者：</strong>没有团队支持，从前端、后端到模型开发全部由我一人完成。</li>
+        <li><strong>热情驱动：</strong>出于对金融市场与数据分析的热爱，我不断迭代优化系统的功能与体验。</li>
+        <li><strong>用户为本：</strong>力求打造简洁高效的数据可视化工具，让用户能用最直观的方式理解市场动向。</li>
       </ul>
-      <!-- 新增内容结束 -->
+
+      <h2>开源与透明</h2>
+      <p>本平台完全开源，所有代码已托管至 <a href="https://github.com/zandala88/financial_data_go" target="_blank">GitHub</a>，欢迎访问、学习或提出建议。</p>
+
+      <h2>系统模块</h2>
+      <p>系统涵盖六大模块：</p>
+      <ul>
+        <li>上市公司信息</li>
+        <li>股票市场（包含预测功能）</li>
+        <li>公募基金</li>
+        <li>期货数据</li>
+        <li>宏观经济指标</li>
+        <li>用户个人中心</li>
+      </ul>
+      <p>通过图表和动态交互，让用户从多个维度洞察金融市场。</p>
+
+      <h2>数据来源</h2>
+      <p>本项目所用金融数据全部来自 <a href="https://tushare.pro" target="_blank">TuShare</a>，感谢其提供高质量的免费金融数据接口支持。</p>
+
+      <h2>技术亮点</h2>
+      <ul>
+        <li><strong>后端：</strong>基于 Golang（Gin + GORM），高性能、强可扩展</li>
+        <li><strong>预测模型：</strong>使用 PyTorch 训练的 LSTM 模型，通过 Flask 暴露预测接口</li>
+        <li><strong>前端：</strong>Vue3 + Element Plus + ECharts，响应式界面、交互友好</li>
+        <li><strong>数据库：</strong>MySQL 与 Redis 相结合，保障系统性能与数据访问效率</li>
+      </ul>
     </section>
     <footer class="footer">
       <p>© 2025 金融数据可视化系统</p>
@@ -103,5 +127,15 @@ export default {
   width: 100%;
   height: auto;
   margin: 20px 0;
+}
+
+.content a {
+  color: #3B82F6;
+  text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
+  color: #4F46E5;
 }
 </style>
