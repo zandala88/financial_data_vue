@@ -86,7 +86,10 @@
             <span class="metric-value">{{ accuracyData.accuracy }}%</span>
           </div>
           <div class="metric-item">
-            <span class="metric-label">R² 决定系数:</span>
+            <span class="metric-label">
+              <span class="info-icon" title="R² 系数，也叫 决定系数（Coefficient of Determination），是衡量回归模型好坏的常用指标之一，它反映了 模型对观测数据的拟合程度。R² 的取值范围是 0 到 1，值越大说明模型越能解释数据的变异性。">?</span>
+              R² 决定系数:
+            </span>
             <span class="metric-value">{{ accuracyData.r2 }}%</span>
           </div>
         </div>
@@ -2233,5 +2236,25 @@ button:hover {
   margin: 8px 0;
   color: #555;
   line-height: 1.5;
+}
+
+.info-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  background-color: #1e88e5;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  margin-right: 5px;
+  cursor: help;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.info-icon:hover {
+  background-color: #1565c0;
 }
 </style>
