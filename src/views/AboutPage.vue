@@ -17,7 +17,13 @@
       </ul>
 
       <h2>开源与透明</h2>
-      <p>本平台完全开源，所有代码已托管至 <a href="https://github.com/zandala88/financial_data_go" target="_blank">GitHub</a>，欢迎访问、学习或提出建议。</p>
+      <p>本平台完全开源，代码已托管至以下三个仓库：</p>
+      <ul>
+        <li><a href="https://github.com/zandala88/financial_data_go" target="_blank">后端服务 (Golang)</a></li>
+        <li><a href="https://github.com/zandala88/financial_data_vue" target="_blank">前端界面 (Vue3)</a></li>
+        <li><a href="https://github.com/zandala88/financial_data_python" target="_blank">预测模型 (Python)</a></li>
+      </ul>
+      <p>欢迎访问、学习或提出建议。</p>
       <h3>GitHub Star 变化</h3>
       <img src="../../public/star-history-202557.png" alt="GitHub Star History" style="max-width:30%;margin:20px 0;" />
 
@@ -123,12 +129,6 @@ export default {
   color: white;
   text-align: center;
   padding: 10px;
-}
-
-.team-photo {
-  width: 100%;
-  height: auto;
-  margin: 20px 0;
 }
 
 .content a {
