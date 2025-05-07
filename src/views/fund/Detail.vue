@@ -627,7 +627,7 @@ export default {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          "http://110.41.11.12:8877/api/v1/fund/ai?id=" + route.params.id,
+          "/api/v1/fund/ai?id=" + route.params.id,
           {
             method: "GET",
             headers: {
