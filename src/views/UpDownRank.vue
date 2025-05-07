@@ -54,7 +54,7 @@
             <div class="stock-info">
               <div class="stock-name">{{ item.name }}</div>
             </div>
-            <div class="change-percent down">{{ item.score }}%</div>
+            <div class="change-percent down">-{{ item.score }}%</div>
           </div>
         </div>
       </div>

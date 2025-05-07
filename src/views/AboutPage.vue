@@ -18,6 +18,8 @@
 
       <h2>开源与透明</h2>
       <p>本平台完全开源，所有代码已托管至 <a href="https://github.com/zandala88/financial_data_go" target="_blank">GitHub</a>，欢迎访问、学习或提出建议。</p>
+      <h3>GitHub Star 变化</h3>
+      <img src="../../public/star-history-202557.png" alt="GitHub Star History" style="max-width:30%;margin:20px 0;" />
 
       <h2>系统模块</h2>
       <p>系统涵盖六大模块：</p>
