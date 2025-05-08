@@ -335,7 +335,7 @@ export default {
         });
 
         tableData.value = res.data.list;
-        total.value = res.data.totalPageNum * pageSize.value;
+        total.value = res.data.count;
       } catch (error) {
         console.error("获取数据失败:", error);
         ElMessage.error("获取数据失败");

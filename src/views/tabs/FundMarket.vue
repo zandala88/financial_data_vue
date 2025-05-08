@@ -218,7 +218,7 @@ export default {
 
         if (res.code === 200) {
           tableData.value = res.data.list
-          total.value = res.data.totalPageNum * pageSize.value
+          total.value = res.data.count
         } else {
           ElMessage.error('获取基金列表失败')
         }

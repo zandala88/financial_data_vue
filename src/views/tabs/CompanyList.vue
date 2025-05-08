@@ -274,7 +274,7 @@ export default {
         if (res.code === 200) {
           this.tableData = res.data.list
           this.totalPageNum = res.data.totalPageNum
-          this.total = this.totalPageNum * this.pageSize
+          this.total = res.data.count
           this.hasMore = this.page < this.totalPageNum
         }
       } catch (error) {
