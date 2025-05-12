@@ -143,7 +143,7 @@ export default {
             const shChartInstance = echarts.init(this.$refs.shChartRef);
             const shOption = {
               title: {
-                text: "沪市十大成交股",
+                text: "沪市",
                 left: "center",
               },
               tooltip: {
@@ -174,7 +174,7 @@ export default {
             const szChartInstance = echarts.init(this.$refs.szChartRef);
             const szOption = {
               title: {
-                text: "深市十大成交股",
+                text: "深市",
                 left: "center",
               },
               tooltip: {
@@ -226,7 +226,6 @@ export default {
     renderRadioChart(data) {
       const chart = echarts.init(this.$refs.radioChartRef);
       const option = {
-        title: { text: "各类型占比", left: "center" },
         tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
         legend: { top: "bottom", padding: [10, 0, 0, 0] },
         grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
@@ -277,7 +276,6 @@ export default {
 
       const chart = echarts.init(this.$refs.instChartRef);
       chart.setOption({
-        title: { text: "机构排名", left: "center" },
         legend: { top: "bottom", padding: [10, 0, 0, 0] },
         grid: { left: "3%", right: "4%", bottom: "15%", containLabel: true },
         xAxis: {
